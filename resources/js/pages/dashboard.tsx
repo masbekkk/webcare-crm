@@ -631,7 +631,7 @@ function PembayaranList({ payments = [] }: { payments?: PembayaranRow[] }) {
     return (
         <Card className="p-6">
             <CardHeader
-                title="Tidakrmalcoming Pembayaran"
+                title="Pembayaran Mendatang"
                 subtitle="Item jadwal yang belum dibayar"
                 href={paymentTimelinesIndex.url()}
             />

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class WebsiteCheckLogIndexRequest extends FormRequest
 {
@@ -25,6 +26,8 @@ class WebsiteCheckLogIndexRequest extends FormRequest
             'is_success' => ['nullable', 'boolean'],
             'checked_from' => ['nullable', 'date'],
             'checked_to' => ['nullable', 'date'],
+            'sort' => ['nullable', 'string', Rule::in(['checked_at', 'monitor', 'project'])],
+            'direction' => ['nullable', 'string', Rule::in(['asc', 'desc'])],
         ];
     }
 }

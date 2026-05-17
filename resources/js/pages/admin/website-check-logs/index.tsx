@@ -1,5 +1,6 @@
 import { Head, router } from '@inertiajs/react';
-import type { FormEvent } from 'react';
+import { ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
+import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
 import { index as checkLogsIndex } from '@/actions/App/Http/Controllers/Admin/WebsiteCheckLogController';
 import { Input } from '@/components/ui/input';
@@ -24,6 +25,8 @@ type Filters = {
     is_success: string | null;
     checked_from: string | null;
     checked_to: string | null;
+    sort: string | null;
+    direction: string | null;
 };
 
 type CheckLogRow = {
@@ -50,6 +53,26 @@ type Stats = {
 
 const statuses = ['up', 'down', 'timeout', 'error'];
 
+function dateTime(value: string | null): string {
+    if (!value) {
+        return '-';
+    }
+
+    const parsed = new Date(value);
+
+    if (Number.isNaN(parsed.getTime())) {
+        return value;
+    }
+
+    return new Intl.DateTimeFormat('id-ID', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    }).format(parsed);
+}
+
 function normalize(filters: Filters): Record<keyof Filters, string> {
     return {
         search: filters.search ?? '',
@@ -60,6 +83,8 @@ function normalize(filters: Filters): Record<keyof Filters, string> {
         is_success: filters.is_success ?? '',
         checked_from: filters.checked_from ?? '',
         checked_to: filters.checked_to ?? '',
+        sort: filters.sort ?? 'checked_at',
+        direction: filters.direction ?? 'desc',
     };
 }
 
@@ -99,8 +124,12 @@ export default function WebsiteCheckLogsIndex({
 
     const submit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        visit(form);
+    };
+
+    const visit = (nextForm: typeof form) => {
         router.get(
-            checkLogsIndex.url({ query: cleanQuery(form) }),
+            checkLogsIndex.url({ query: cleanQuery(nextForm) }),
             {},
             { preserveScroll: true },
         );
@@ -108,6 +137,15 @@ export default function WebsiteCheckLogsIndex({
 
     const reset = () => {
         router.get(checkLogsIndex.url(), {}, { preserveScroll: true });
+    };
+
+    const sortBy = (sort: 'checked_at' | 'monitor' | 'project') => {
+        const direction =
+            form.sort === sort && form.direction === 'asc' ? 'desc' : 'asc';
+        const nextForm = { ...form, sort, direction };
+
+        setForm(nextForm);
+        visit(nextForm);
     };
 
     return (
@@ -248,9 +286,35 @@ export default function WebsiteCheckLogsIndex({
                         <table className="w-full min-w-[1050px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
-                                    <th className="px-5 py-3">Diperiksa</th>
-                                    <th className="px-5 py-3">Monitor</th>
-                                    <th className="px-5 py-3">Proyek</th>
+                                    <th className="px-5 py-3">
+                                        <SortButton
+                                            active={form.sort === 'checked_at'}
+                                            direction={form.direction}
+                                            onClick={() =>
+                                                sortBy('checked_at')
+                                            }
+                                        >
+                                            Diperiksa
+                                        </SortButton>
+                                    </th>
+                                    <th className="px-5 py-3">
+                                        <SortButton
+                                            active={form.sort === 'monitor'}
+                                            direction={form.direction}
+                                            onClick={() => sortBy('monitor')}
+                                        >
+                                            Monitor
+                                        </SortButton>
+                                    </th>
+                                    <th className="px-5 py-3">
+                                        <SortButton
+                                            active={form.sort === 'project'}
+                                            direction={form.direction}
+                                            onClick={() => sortBy('project')}
+                                        >
+                                            Proyek
+                                        </SortButton>
+                                    </th>
                                     <th className="px-5 py-3">Response</th>
                                     <th className="px-5 py-3">Error</th>
                                     <th className="px-5 py-3">Hasil</th>
@@ -260,7 +324,7 @@ export default function WebsiteCheckLogsIndex({
                                 {checkLogs.data.map((log) => (
                                     <tr key={log.id}>
                                         <td className="px-5 py-4 text-xs text-[#667085]">
-                                            {log.checked_at}
+                                            {dateTime(log.checked_at)}
                                         </td>
                                         <td className="px-5 py-4">
                                             <div className="font-semibold text-[#101828]">
@@ -313,5 +377,34 @@ export default function WebsiteCheckLogsIndex({
                 </div>
             </div>
         </>
+    );
+}
+
+function SortButton({
+    active,
+    direction,
+    onClick,
+    children,
+}: {
+    active: boolean;
+    direction: string;
+    onClick: () => void;
+    children: ReactNode;
+}) {
+    const Icon = !active
+        ? ArrowUpDown
+        : direction === 'desc'
+          ? ArrowDown
+          : ArrowUp;
+
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className="flex items-center gap-1 font-semibold uppercase"
+        >
+            {children}
+            <Icon className="size-3.5" />
+        </button>
     );
 }

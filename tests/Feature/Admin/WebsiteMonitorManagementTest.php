@@ -6,6 +6,7 @@ use App\Models\Client;
 use App\Models\Project;
 use App\Models\ProjectLink;
 use App\Models\User;
+use App\Models\WebsiteCheckLog;
 use App\Models\WebsiteMonitor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -77,6 +78,26 @@ class WebsiteMonitorManagementTest extends TestCase
             'url' => 'https://example.test',
             'current_status' => 'up',
         ]);
+        WebsiteCheckLog::create([
+            'monitor_id' => $monitor->id,
+            'project_id' => $project->id,
+            'checked_at' => '2026-05-18 08:00:00',
+            'is_success' => true,
+            'status' => 'up',
+            'status_code' => 200,
+            'response_time_ms' => 120,
+        ]);
+        WebsiteCheckLog::create([
+            'monitor_id' => $monitor->id,
+            'project_id' => $project->id,
+            'checked_at' => '2026-05-18 09:00:00',
+            'is_success' => false,
+            'status' => 'down',
+            'status_code' => 500,
+            'response_time_ms' => 900,
+            'error_type' => 'http_error',
+            'error_message' => 'Server error',
+        ]);
 
         $this->actingAs($admin)
             ->get(route('admin.monitors.show', $monitor))
@@ -85,7 +106,11 @@ class WebsiteMonitorManagementTest extends TestCase
                 ->component('admin/monitors/show')
                 ->where('monitor.name', 'Production website')
                 ->where('monitor.project.name', 'Acme Website')
-                ->where('monitor.project_link.label', 'Production'));
+                ->where('monitor.project_link.label', 'Production')
+                ->has('monitor.check_logs', 2)
+                ->where('monitor.check_logs.0.status', 'down')
+                ->where('monitor.check_logs.0.error_message', 'Server error')
+                ->where('monitor.check_logs.1.status', 'up'));
     }
 
     public function test_admin_can_view_monitor_edit_form(): void

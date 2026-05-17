@@ -41,6 +41,16 @@ type MonitorShowPayload = {
         label: string;
         url: string;
     } | null;
+    check_logs: Array<{
+        id: number;
+        checked_at: string;
+        is_success: boolean;
+        status: string;
+        status_code: number | null;
+        response_time_ms: number | null;
+        error_type: string | null;
+        error_message: string | null;
+    }>;
 };
 
 function value(text: string | number | null): string {
@@ -104,7 +114,9 @@ export default function MonitorsShow({
                                 }
                             />
                             <StatusBadge
-                                value={monitor.is_active ? 'active' : 'inactive'}
+                                value={
+                                    monitor.is_active ? 'active' : 'inactive'
+                                }
                             />
                         </div>
                     </div>
@@ -128,7 +140,10 @@ export default function MonitorsShow({
                 </div>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <Stat title="HTTP" value={value(monitor.last_status_code)} />
+                    <Stat
+                        title="HTTP"
+                        value={value(monitor.last_status_code)}
+                    />
                     <Stat
                         title="Response"
                         value={
@@ -235,6 +250,69 @@ export default function MonitorsShow({
                         </dl>
                     </Panel>
                 </div>
+
+                <section className="mt-6 overflow-hidden rounded-lg border border-[#E4E7EC] bg-white">
+                    <div className="border-b border-[#E4E7EC] px-6 py-4">
+                        <h2 className="text-base font-semibold text-[#101828]">
+                            Monitor check log
+                        </h2>
+                        <p className="mt-1 text-sm text-[#667085]">
+                            10 pemeriksaan terakhir untuk monitor ini.
+                        </p>
+                    </div>
+                    <div className="overflow-x-auto">
+                        <table className="w-full min-w-[900px] text-left text-sm">
+                            <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
+                                <tr>
+                                    <th className="w-20 px-5 py-3">No</th>
+                                    <th className="px-5 py-3">Diperiksa</th>
+                                    <th className="px-5 py-3">Response</th>
+                                    <th className="px-5 py-3">Error</th>
+                                    <th className="px-5 py-3">Hasil</th>
+                                </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#E4E7EC]">
+                                {monitor.check_logs.map((log, index) => (
+                                    <tr key={log.id}>
+                                        <td className="px-5 py-4 text-[#667085]">
+                                            {index + 1}
+                                        </td>
+                                        <td className="px-5 py-4 text-xs text-[#667085]">
+                                            {dateTime(log.checked_at)}
+                                        </td>
+                                        <td className="px-5 py-4 text-xs text-[#667085]">
+                                            HTTP {log.status_code ?? '-'}
+                                            <br />
+                                            {log.response_time_ms ?? '-'} ms
+                                        </td>
+                                        <td className="px-5 py-4 text-xs text-[#667085]">
+                                            {log.error_type ?? '-'}
+                                            <div className="mt-1 max-w-[360px] truncate">
+                                                {log.error_message ?? '-'}
+                                            </div>
+                                        </td>
+                                        <td className="px-5 py-4">
+                                            <StatusBadge
+                                                value={log.status}
+                                                tone={
+                                                    log.is_success
+                                                        ? 'good'
+                                                        : 'bad'
+                                                }
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    {monitor.check_logs.length === 0 && (
+                        <div className="px-5 py-12 text-center text-sm text-[#667085]">
+                            Belum ada check log.
+                        </div>
+                    )}
+                </section>
             </div>
         </>
     );
@@ -255,11 +333,17 @@ function Panel({
     );
 }
 
-function Detail({ label, value: detailValue }: { label: string; value: string }) {
+function Detail({
+    label,
+    value: detailValue,
+}: {
+    label: string;
+    value: string;
+}) {
     return (
         <div>
             <dt className="text-xs font-medium text-[#667085]">{label}</dt>
-            <dd className="mt-1 break-words font-semibold text-[#101828]">
+            <dd className="mt-1 font-semibold break-words text-[#101828]">
                 {detailValue}
             </dd>
         </div>

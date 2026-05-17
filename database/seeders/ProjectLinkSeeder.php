@@ -38,20 +38,17 @@ class ProjectLinkSeeder extends Seeder
     private function links(): array
     {
         return [
-            'kopi-senja-company-profile' => [
-                ['type' => 'production', 'label' => 'Production Site', 'url' => 'https://kopisenja.test', 'is_primary' => true],
-                ['type' => 'admin_panel', 'label' => 'Admin Panel', 'url' => 'https://kopisenja.test/admin', 'username' => 'admin@kopisenja.test'],
-                ['type' => 'repository', 'label' => 'Git Repository', 'url' => 'https://github.com/webcare/kopi-senja-profile'],
+            'shayda-production-website' => [
+                ['type' => 'production', 'label' => 'Production Site', 'url' => 'https://shayda.webcareproject.my.id/', 'is_primary' => true],
+                ['type' => 'admin_panel', 'label' => 'Admin Panel', 'url' => 'https://shayda.webcareproject.my.id/admin'],
             ],
-            'alika-fashion-ecommerce' => [
-                ['type' => 'staging', 'label' => 'Staging Site', 'url' => 'https://staging.alikafashion.test', 'is_primary' => true],
-                ['type' => 'figma', 'label' => 'Figma Design', 'url' => 'https://figma.com/file/alika-commerce'],
-                ['type' => 'repository', 'label' => 'Git Repository', 'url' => 'https://github.com/webcare/alika-commerce'],
+            'anemi-production-website' => [
+                ['type' => 'production', 'label' => 'Production Site', 'url' => 'https://anemi.webcareproject.my.id/', 'is_primary' => true],
+                ['type' => 'admin_panel', 'label' => 'Admin Panel', 'url' => 'https://anemi.webcareproject.my.id/admin'],
             ],
-            'medika-pratama-booking-system' => [
-                ['type' => 'staging', 'label' => 'UAT Site', 'url' => 'https://uat.medikapratama.test', 'is_primary' => true],
-                ['type' => 'documentation', 'label' => 'UAT Checklist', 'url' => 'https://docs.webcare.test/medika-uat'],
-                ['type' => 'repository', 'label' => 'Git Repository', 'url' => 'https://github.com/webcare/medika-booking'],
+            'webcare-intern-portal' => [
+                ['type' => 'production', 'label' => 'Production Site', 'url' => 'http://intern.webcareproject.my.id/', 'is_primary' => true],
+                ['type' => 'admin_panel', 'label' => 'Admin Panel', 'url' => 'http://intern.webcareproject.my.id/admin'],
             ],
         ];
     }

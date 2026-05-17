@@ -52,7 +52,7 @@ export function AppSidebarHeader() {
                         <button
                             type="button"
                             className="relative flex size-11 items-center justify-center rounded-full border border-[#E4E7EC] text-[#667085] hover:bg-[#F9FAFB]"
-                            aria-label="Tidaktifikasi"
+                            aria-label="Notifications"
                         >
                             <Bell className="size-5" strokeWidth={1.8} />
                             <span className="absolute top-2 right-2 size-2 rounded-full bg-[#FD853A]" />
@@ -61,7 +61,7 @@ export function AppSidebarHeader() {
                     <DropdownMenuContent className="w-[320px] p-0" align="end">
                         <div className="border-b border-[#E4E7EC] px-4 py-3">
                             <p className="text-sm font-semibold text-[#101828]">
-                                Tidaktifikasi
+                                Notifications
                             </p>
                             <p className="text-xs text-[#667085]">
                                 Aktivitas akun terbaru.

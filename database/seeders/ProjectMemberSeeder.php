@@ -38,22 +38,22 @@ class ProjectMemberSeeder extends Seeder
     private function members(): array
     {
         return [
-            'kopi-senja-company-profile' => [
+            'shayda-production-website' => [
                 ['email' => 'rani@webcare.test', 'role' => 'Project Manager'],
                 ['email' => 'dimas@webcare.test', 'role' => 'Fullstack Developer'],
-                ['email' => 'portal@kopisenja.test', 'role' => 'Client Reviewer'],
+                ['email' => 'portal@shayda.webcareproject.my.id', 'role' => 'Client Reviewer'],
             ],
-            'alika-fashion-ecommerce' => [
+            'anemi-production-website' => [
                 ['email' => 'rani@webcare.test', 'role' => 'Project Manager'],
                 ['email' => 'dimas@webcare.test', 'role' => 'Lead Developer'],
                 ['email' => 'sinta@webcare.test', 'role' => 'QA Support'],
-                ['email' => 'portal@alikafashion.test', 'role' => 'Client Product Owner'],
+                ['email' => 'portal@anemi.webcareproject.my.id', 'role' => 'Client Product Owner'],
             ],
-            'medika-pratama-booking-system' => [
+            'webcare-intern-portal' => [
                 ['email' => 'rani@webcare.test', 'role' => 'Project Manager'],
                 ['email' => 'dimas@webcare.test', 'role' => 'Backend Developer'],
                 ['email' => 'sinta@webcare.test', 'role' => 'UAT Coordinator'],
-                ['email' => 'portal@medikapratama.test', 'role' => 'Clinic Admin Reviewer'],
+                ['email' => 'portal@intern.webcareproject.my.id', 'role' => 'Internal Reviewer'],
             ],
         ];
     }

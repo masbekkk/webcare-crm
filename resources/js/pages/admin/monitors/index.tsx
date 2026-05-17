@@ -1,6 +1,14 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Edit, Eye, Plus, Trash2 } from 'lucide-react';
-import type { FormEvent } from 'react';
+import {
+    ArrowDown,
+    ArrowUp,
+    ArrowUpDown,
+    Edit,
+    Eye,
+    Plus,
+    Trash2,
+} from 'lucide-react';
+import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
 import {
     create,
@@ -29,6 +37,8 @@ type Filters = {
     project_id: string | null;
     status: string | null;
     is_active: string | null;
+    sort: string | null;
+    direction: string | null;
 };
 
 type MonitorRow = {
@@ -71,6 +81,8 @@ function normalize(filters: Filters): Record<keyof Filters, string> {
         project_id: filters.project_id ?? '',
         status: filters.status ?? '',
         is_active: filters.is_active ?? '',
+        sort: filters.sort ?? '',
+        direction: filters.direction ?? '',
     };
 }
 
@@ -81,7 +93,11 @@ export default function MonitorsIndex({
     clients,
     projects,
 }: {
-    monitors: { data: MonitorRow[]; links: PaginationLink[] };
+    monitors: {
+        data: MonitorRow[];
+        from: number | null;
+        links: PaginationLink[];
+    };
     filters: Filters;
     stats: Stats;
     clients: Option[];
@@ -103,15 +119,28 @@ export default function MonitorsIndex({
 
     const submit = (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        visit(form);
+    };
+
+    const reset = () => {
+        router.get(monitorsIndex.url(), {}, { preserveScroll: true });
+    };
+
+    const visit = (nextForm: typeof form) => {
         router.get(
-            monitorsIndex.url({ query: cleanQuery(form) }),
+            monitorsIndex.url({ query: cleanQuery(nextForm) }),
             {},
             { preserveScroll: true },
         );
     };
 
-    const reset = () => {
-        router.get(monitorsIndex.url(), {}, { preserveScroll: true });
+    const sortBy = (sort: 'monitor' | 'project') => {
+        const direction =
+            form.sort === sort && form.direction === 'asc' ? 'desc' : 'asc';
+        const nextForm = { ...form, sort, direction };
+
+        setForm(nextForm);
+        visit(nextForm);
     };
 
     const deleteMonitor = (monitor: MonitorRow) => {
@@ -234,10 +263,29 @@ export default function MonitorsIndex({
                         <table className="w-full min-w-[1100px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
-                                    <th className="px-5 py-3">Monitor</th>
-                                    <th className="px-5 py-3">Proyek</th>
+                                    <th className="w-20 px-5 py-3">No</th>
+                                    <th className="px-5 py-3">
+                                        <SortButton
+                                            active={form.sort === 'monitor'}
+                                            direction={form.direction}
+                                            onClick={() => sortBy('monitor')}
+                                        >
+                                            Monitor
+                                        </SortButton>
+                                    </th>
+                                    <th className="px-5 py-3">
+                                        <SortButton
+                                            active={form.sort === 'project'}
+                                            direction={form.direction}
+                                            onClick={() => sortBy('project')}
+                                        >
+                                            Proyek
+                                        </SortButton>
+                                    </th>
                                     <th className="px-5 py-3">Pemeriksaan</th>
-                                    <th className="px-5 py-3">Hasil terakhir</th>
+                                    <th className="px-5 py-3">
+                                        Hasil terakhir
+                                    </th>
                                     <th className="px-5 py-3">Streak</th>
                                     <th className="px-5 py-3">Status</th>
                                     <th className="px-5 py-3 text-right">
@@ -246,8 +294,11 @@ export default function MonitorsIndex({
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E4E7EC]">
-                                {monitors.data.map((monitor) => (
+                                {monitors.data.map((monitor, index) => (
                                     <tr key={monitor.id}>
+                                        <td className="px-5 py-4 text-[#667085]">
+                                            {(monitors.from ?? 1) + index}
+                                        </td>
                                         <td className="px-5 py-4">
                                             <div className="font-semibold text-[#101828]">
                                                 {monitor.name}
@@ -372,5 +423,34 @@ export default function MonitorsIndex({
                 </div>
             </div>
         </>
+    );
+}
+
+function SortButton({
+    active,
+    direction,
+    onClick,
+    children,
+}: {
+    active: boolean;
+    direction: string;
+    onClick: () => void;
+    children: ReactNode;
+}) {
+    const Icon = !active
+        ? ArrowUpDown
+        : direction === 'desc'
+          ? ArrowDown
+          : ArrowUp;
+
+    return (
+        <button
+            type="button"
+            onClick={onClick}
+            className="flex items-center gap-1 font-semibold uppercase"
+        >
+            {children}
+            <Icon className="size-3.5" />
+        </button>
     );
 }

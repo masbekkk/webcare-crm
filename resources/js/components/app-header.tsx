@@ -227,7 +227,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                     variant="ghost"
                                     size="icon"
                                     className="relative size-10 rounded-full"
-                                    aria-label="Tidaktifikasi"
+                                    aria-label="Notifications"
                                 >
                                     <Bell className="size-5 opacity-80" />
                                     <span className="absolute top-2 right-2 size-2 rounded-full bg-[#FD853A]" />
@@ -239,7 +239,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                             >
                                 <div className="border-b border-[#E4E7EC] px-4 py-3">
                                     <p className="text-sm font-semibold text-[#101828]">
-                                        Tidaktifikasi
+                                        Notifications
                                     </p>
                                     <p className="text-xs text-[#667085]">
                                         Aktivitas akun terbaru.

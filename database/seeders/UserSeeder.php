@@ -89,22 +89,22 @@ class UserSeeder extends Seeder
     {
         return [
             [
-                'company_name' => 'PT Kopi Senja Nusantara',
-                'name' => 'Bima Pratama',
-                'email' => 'portal@kopisenja.test',
-                'phone' => '0813-2233-4401',
+                'company_name' => 'Shayda',
+                'name' => 'Shayda Admin',
+                'email' => 'portal@shayda.webcareproject.my.id',
+                'phone' => null,
             ],
             [
-                'company_name' => 'CV Alika Fashion Indonesia',
-                'name' => 'Nadia Lestari',
-                'email' => 'portal@alikafashion.test',
-                'phone' => '0812-8844-5502',
+                'company_name' => 'Anemi',
+                'name' => 'Anemi Admin',
+                'email' => 'portal@anemi.webcareproject.my.id',
+                'phone' => null,
             ],
             [
-                'company_name' => 'Klinik Medika Pratama',
-                'name' => 'Admin Medika',
-                'email' => 'portal@medikapratama.test',
-                'phone' => '0811-9000-3303',
+                'company_name' => 'Webcare Intern',
+                'name' => 'Intern Portal Admin',
+                'email' => 'portal@intern.webcareproject.my.id',
+                'phone' => null,
             ],
         ];
     }

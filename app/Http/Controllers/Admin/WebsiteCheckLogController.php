@@ -20,11 +20,12 @@ class WebsiteCheckLogController extends Controller
         $query = WebsiteCheckLog::query()
             ->with(['monitor:id,name,url', 'project.client:id,company_name', 'project:id,client_id,name,slug'])
             ->tap(fn (Builder $query) => $this->applyFilters($query, $filters));
+        $stats = $this->stats((clone $query)->withoutEagerLoads());
 
         return Inertia::render('admin/website-check-logs/index', [
-            'checkLogs' => $query->latest('checked_at')->paginate(10)->withQueryString(),
+            'checkLogs' => $this->applySorting($query, $filters)->paginate(10)->withQueryString(),
             'filters' => $this->filters($filters),
-            'stats' => $this->stats((clone $query)->withoutEagerLoads()),
+            'stats' => $stats,
             ...$this->options(),
         ]);
     }
@@ -67,7 +68,31 @@ class WebsiteCheckLogController extends Controller
             'is_success' => isset($filters['is_success']) ? (string) (int) $filters['is_success'] : null,
             'checked_from' => $filters['checked_from'] ?? null,
             'checked_to' => $filters['checked_to'] ?? null,
+            'sort' => $filters['sort'] ?? 'checked_at',
+            'direction' => $filters['direction'] ?? 'desc',
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    private function applySorting(Builder $query, array $filters): Builder
+    {
+        $direction = ($filters['direction'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
+
+        return match ($filters['sort'] ?? 'checked_at') {
+            'monitor' => $query
+                ->select('website_check_logs.*')
+                ->leftJoin('website_monitors', 'website_monitors.id', '=', 'website_check_logs.monitor_id')
+                ->orderBy('website_monitors.name', $direction)
+                ->orderBy('website_check_logs.checked_at', 'desc'),
+            'project' => $query
+                ->select('website_check_logs.*')
+                ->leftJoin('projects', 'projects.id', '=', 'website_check_logs.project_id')
+                ->orderBy('projects.name', $direction)
+                ->orderBy('website_check_logs.checked_at', 'desc'),
+            default => $query->orderBy('website_check_logs.checked_at', $direction),
+        };
     }
 
     /**

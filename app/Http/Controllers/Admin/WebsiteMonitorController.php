@@ -23,11 +23,12 @@ class WebsiteMonitorController extends Controller
             ->with(['project.client:id,company_name', 'project:id,client_id,name,slug', 'projectLink:id,label,url'])
             ->withCount(['checkLogs', 'incidents'])
             ->tap(fn (Builder $query) => $this->applyFilters($query, $filters));
+        $stats = $this->stats((clone $query)->withoutEagerLoads());
 
         return Inertia::render('admin/monitors/index', [
-            'monitors' => $query->latest()->paginate(10)->withQueryString(),
+            'monitors' => $this->applySorting($query, $filters)->paginate(10)->withQueryString(),
             'filters' => $this->filters($filters),
-            'stats' => $this->stats((clone $query)->withoutEagerLoads()),
+            'stats' => $stats,
             ...$this->options(),
         ]);
     }
@@ -57,6 +58,9 @@ class WebsiteMonitorController extends Controller
             'monitor' => $monitor
                 ->loadCount(['checkLogs', 'incidents'])
                 ->load([
+                    'checkLogs' => fn ($query) => $query
+                        ->latest('checked_at')
+                        ->limit(10),
                     'project.client:id,company_name',
                     'project:id,client_id,name,slug',
                     'projectLink:id,label,url',
@@ -100,8 +104,8 @@ class WebsiteMonitorController extends Controller
             ->when($filters['search'] ?? null, function (Builder $query, string $search): void {
                 $query->where(function (Builder $query) use ($search): void {
                     $query
-                        ->where('name', 'like', "%{$search}%")
-                        ->orWhere('url', 'like', "%{$search}%")
+                        ->where('website_monitors.name', 'like', "%{$search}%")
+                        ->orWhere('website_monitors.url', 'like', "%{$search}%")
                         ->orWhereHas('project', fn (Builder $query) => $query->where('name', 'like', "%{$search}%"));
                 });
             })
@@ -123,7 +127,27 @@ class WebsiteMonitorController extends Controller
             'project_id' => isset($filters['project_id']) ? (string) $filters['project_id'] : null,
             'status' => $filters['status'] ?? null,
             'is_active' => isset($filters['is_active']) ? (string) (int) $filters['is_active'] : null,
+            'sort' => $filters['sort'] ?? null,
+            'direction' => $filters['direction'] ?? null,
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    private function applySorting(Builder $query, array $filters): Builder
+    {
+        $direction = $filters['direction'] ?? 'asc';
+
+        return match ($filters['sort'] ?? null) {
+            'monitor' => $query->orderBy('website_monitors.name', $direction),
+            'project' => $query
+                ->select('website_monitors.*')
+                ->leftJoin('projects', 'projects.id', '=', 'website_monitors.project_id')
+                ->orderBy('projects.name', $direction)
+                ->orderBy('website_monitors.name'),
+            default => $query->latest(),
+        };
     }
 
     /**

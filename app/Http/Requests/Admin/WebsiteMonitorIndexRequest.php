@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class WebsiteMonitorIndexRequest extends FormRequest
 {
@@ -22,6 +23,8 @@ class WebsiteMonitorIndexRequest extends FormRequest
             'project_id' => ['nullable', 'integer', 'exists:projects,id'],
             'status' => ['nullable', 'string', 'max:80'],
             'is_active' => ['nullable', 'boolean'],
+            'sort' => ['nullable', Rule::in(['monitor', 'project'])],
+            'direction' => ['nullable', Rule::in(['asc', 'desc'])],
         ];
     }
 }

@@ -91,6 +91,60 @@ class MonitoringIndexesTest extends TestCase
                 ->where('filters.is_active', '1'));
     }
 
+    public function test_admin_can_sort_website_monitors_by_monitor_and_project(): void
+    {
+        $admin = User::factory()->create();
+        $acme = Client::create(['company_name' => 'Acme Studio']);
+        $zen = Client::create(['company_name' => 'Zen Works']);
+        $alphaProject = Project::create([
+            'client_id' => $acme->id,
+            'name' => 'Alpha Project',
+            'slug' => 'alpha-project',
+            'project_type' => 'Company Profile',
+            'created_by' => $admin->id,
+        ]);
+        $zetaProject = Project::create([
+            'client_id' => $zen->id,
+            'name' => 'Zeta Project',
+            'slug' => 'zeta-project',
+            'project_type' => 'CRM',
+            'created_by' => $admin->id,
+        ]);
+
+        WebsiteMonitor::create([
+            'project_id' => $zetaProject->id,
+            'name' => 'Beta monitor',
+            'url' => 'https://beta.test',
+        ]);
+        WebsiteMonitor::create([
+            'project_id' => $alphaProject->id,
+            'name' => 'Alpha monitor',
+            'url' => 'https://alpha.test',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.monitors.index', [
+                'sort' => 'monitor',
+                'direction' => 'desc',
+            ]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('filters.sort', 'monitor')
+                ->where('filters.direction', 'desc')
+                ->where('monitors.data.0.name', 'Beta monitor'));
+
+        $this->actingAs($admin)
+            ->get(route('admin.monitors.index', [
+                'sort' => 'project',
+                'direction' => 'asc',
+            ]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->where('filters.sort', 'project')
+                ->where('filters.direction', 'asc')
+                ->where('monitors.data.0.project.name', 'Alpha Project'));
+    }
+
     public function test_admin_can_view_website_check_logs_index(): void
     {
         [$admin, $client, $project] = $this->projectContext();
