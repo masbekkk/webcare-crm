@@ -1,5 +1,5 @@
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { ArrowUpDown, Plus, Search, X } from 'lucide-react';
+import { ArrowDown, Plus, Search, X } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
 import {
@@ -130,7 +130,7 @@ const statuses = [
     'overdue',
     'cancelled',
 ];
-const paymentMethods = [
+const paymentMetodes = [
     'bank_transfer',
     'cash',
     'e_wallet',
@@ -231,7 +231,7 @@ export default function PaymentTimelinesIndex({
     projects: Option[];
 }) {
     const [form, setForm] = useState(normalize(filters));
-    const filteredProjects = projects.filter(
+    const filteredProject = projects.filter(
         (project) =>
             !form.client_id || String(project.client_id) === form.client_id,
     );
@@ -275,12 +275,12 @@ export default function PaymentTimelinesIndex({
 
     return (
         <>
-            <Head title="Payment timelines" />
+            <Head title="Jadwal pembayaran" />
             <div className="p-6">
                 <div className="flex flex-wrap items-start justify-between gap-4">
                     <div>
                         <h1 className="text-2xl font-semibold text-[#101828]">
-                            Payment timelines
+                            Jadwal pembayaran
                         </h1>
                         <p className="mt-1 text-sm text-[#667085]">
                             Monitor all planned, due, overdue, and paid project
@@ -299,19 +299,19 @@ export default function PaymentTimelinesIndex({
                         value={overallStats.total_count.toString()}
                     />
                     <Stat
-                        title="Planned"
+                        title="Direncanakan"
                         value={money(overallStats.total_planned_amount)}
                     />
                     <Stat
-                        title="Paid"
+                        title="Terbayar"
                         value={money(overallStats.total_paid_amount)}
                     />
                     <Stat
-                        title="Remaining"
+                        title="Sisa"
                         value={money(overallStats.total_remaining_amount)}
                     />
                     <Stat
-                        title="Paid count"
+                        title="Terbayar count"
                         value={overallStats.paid_count.toString()}
                     />
                     <Stat
@@ -325,7 +325,7 @@ export default function PaymentTimelinesIndex({
                     className="mt-6 rounded-lg border border-[#E4E7EC] bg-white p-5"
                 >
                     <div className="grid gap-4 lg:grid-cols-4">
-                        <Field label="Search">
+                        <Field label="Cari">
                             <Input
                                 value={form.search}
                                 onChange={(event) =>
@@ -333,7 +333,7 @@ export default function PaymentTimelinesIndex({
                                 }
                             />
                         </Field>
-                        <Field label="Client">
+                        <Field label="Klien">
                             <select
                                 value={form.client_id}
                                 onChange={(event) =>
@@ -341,7 +341,7 @@ export default function PaymentTimelinesIndex({
                                 }
                                 className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             >
-                                <option value="">All clients</option>
+                                <option value="">All klien</option>
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
                                         {client.company_name}
@@ -349,7 +349,7 @@ export default function PaymentTimelinesIndex({
                                 ))}
                             </select>
                         </Field>
-                        <Field label="Project">
+                        <Field label="Proyek">
                             <select
                                 value={form.project_id}
                                 onChange={(event) =>
@@ -357,8 +357,8 @@ export default function PaymentTimelinesIndex({
                                 }
                                 className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             >
-                                <option value="">All projects</option>
-                                {filteredProjects.map((project) => (
+                                <option value="">All proyek</option>
+                                {filteredProject.map((project) => (
                                     <option key={project.id} value={project.id}>
                                         {project.name}
                                     </option>
@@ -373,7 +373,7 @@ export default function PaymentTimelinesIndex({
                                 }
                                 className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             >
-                                <option value="">All statuses</option>
+                                <option value="">All status</option>
                                 {statuses.map((status) => (
                                     <option key={status} value={status}>
                                         {status}
@@ -381,7 +381,7 @@ export default function PaymentTimelinesIndex({
                                 ))}
                             </select>
                         </Field>
-                        <Field label="Type">
+                        <Field label="Tipe">
                             <select
                                 value={form.type}
                                 onChange={(event) =>
@@ -389,7 +389,7 @@ export default function PaymentTimelinesIndex({
                                 }
                                 className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             >
-                                <option value="">All types</option>
+                                <option value="">All tipe</option>
                                 {types.map((type) => (
                                     <option key={type} value={type}>
                                         {type}
@@ -397,7 +397,7 @@ export default function PaymentTimelinesIndex({
                                 ))}
                             </select>
                         </Field>
-                        <Field label="Payment method">
+                        <Field label="Metode pembayaran">
                             <select
                                 value={form.payment_method}
                                 onChange={(event) =>
@@ -408,8 +408,8 @@ export default function PaymentTimelinesIndex({
                                 }
                                 className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             >
-                                <option value="">All methods</option>
-                                {paymentMethods.map((method) => (
+                                <option value="">All metode</option>
+                                {paymentMetodes.map((method) => (
                                     <option key={method} value={method}>
                                         {method}
                                     </option>
@@ -434,7 +434,7 @@ export default function PaymentTimelinesIndex({
                                 }
                             />
                         </Field>
-                        <Field label="Paid from">
+                        <Field label="Terbayar from">
                             <Input
                                 type="date"
                                 value={form.paid_from}
@@ -443,7 +443,7 @@ export default function PaymentTimelinesIndex({
                                 }
                             />
                         </Field>
-                        <Field label="Paid to">
+                        <Field label="Terbayar to">
                             <Input
                                 type="date"
                                 value={form.paid_to}
@@ -473,7 +473,7 @@ export default function PaymentTimelinesIndex({
                                 }
                             />
                         </Field>
-                        <Field label="Additional charge">
+                        <Field label="Biaya tambahan">
                             <select
                                 value={form.is_additional_charge}
                                 onChange={(event) =>
@@ -484,15 +484,15 @@ export default function PaymentTimelinesIndex({
                                 }
                                 className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             >
-                                <option value="">All</option>
-                                <option value="1">Yes</option>
-                                <option value="0">No</option>
+                                <option value="">Semua</option>
+                                <option value="1">Ya</option>
+                                <option value="0">Tidak</option>
                             </select>
                         </Field>
                     </div>
                     <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
                         <p className="text-sm text-[#667085]">
-                            Filtered: {filteredStats.total_count} items,{' '}
+                            Terfilter: {filteredStats.total_count} item,{' '}
                             {money(filteredStats.total_remaining_amount)}{' '}
                             remaining.
                         </p>
@@ -518,11 +518,11 @@ export default function PaymentTimelinesIndex({
                         <table className="w-full min-w-[1160px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
-                                    <th className="w-16 px-5 py-3">No</th>
-                                    <th className="px-5 py-3">Payment</th>
+                                    <th className="w-16 px-5 py-3">Tidak</th>
+                                    <th className="px-5 py-3">Pembayaran</th>
                                     <th className="px-5 py-3">
                                         <SortButton
-                                            label="Client"
+                                            label="Klien"
                                             sort="client"
                                             activeSort={form.sort as SortKey}
                                             direction={
@@ -533,7 +533,7 @@ export default function PaymentTimelinesIndex({
                                     </th>
                                     <th className="px-5 py-3">
                                         <SortButton
-                                            label="Amounts"
+                                            label="Nominal"
                                             sort="planned_amount"
                                             activeSort={form.sort as SortKey}
                                             direction={
@@ -544,7 +544,7 @@ export default function PaymentTimelinesIndex({
                                     </th>
                                     <th className="px-5 py-3">
                                         <SortButton
-                                            label="Dates"
+                                            label="Date"
                                             sort="due_date"
                                             activeSort={form.sort as SortKey}
                                             direction={
@@ -554,7 +554,7 @@ export default function PaymentTimelinesIndex({
                                         />
                                     </th>
                                     <th className="px-5 py-3">Status</th>
-                                    <th className="px-5 py-3">Method</th>
+                                    <th className="px-5 py-3">Metode</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E4E7EC]">
@@ -585,13 +585,13 @@ export default function PaymentTimelinesIndex({
                                                 {timeline.client.company_name}
                                             </td>
                                             <td className="px-5 py-4 text-xs text-[#667085]">
-                                                Planned:{' '}
+                                                Direncanakan:{' '}
                                                 {money(timeline.planned_amount)}
                                                 <br />
-                                                Paid:{' '}
+                                                Terbayar:{' '}
                                                 {money(timeline.paid_amount)}
                                                 <br />
-                                                Remaining:{' '}
+                                                Sisa:{' '}
                                                 {money(
                                                     timeline.remaining_amount,
                                                 )}
@@ -599,7 +599,7 @@ export default function PaymentTimelinesIndex({
                                             <td className="px-5 py-4 text-xs text-[#667085]">
                                                 Due: {date(timeline.due_date)}
                                                 <br />
-                                                Paid: {date(timeline.paid_at)}
+                                                Terbayar: {date(timeline.paid_at)}
                                                 <br />
                                                 Billing:{' '}
                                                 {date(
@@ -632,7 +632,7 @@ export default function PaymentTimelinesIndex({
 
                     {paymentTimelines.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No payment timelines found.
+                            Tidak payment timelines found.
                         </div>
                     )}
 
@@ -717,7 +717,7 @@ function SortButton({
             className="inline-flex items-center gap-1 font-semibold text-[#667085] hover:text-[#101828]"
         >
             {label}
-            <ArrowUpDown className="size-3.5" />
+            <ArrowDown className="size-3.5" />
             {isActive && (
                 <span className="text-[10px]">
                     {direction === 'asc' ? 'ASC' : 'DESC'}
@@ -734,10 +734,10 @@ function CreatePaymentTimelineModal({
     clients: Option[];
     projects: Option[];
 }) {
-    const [open, setOpen] = useState(false);
+    const [open, setTerbuka] = useState(false);
     const { data, setData, post, processing, errors, reset, clearErrors } =
         useForm<PaymentTimelineFormData>(emptyPaymentTimeline());
-    const filteredProjects = projects.filter(
+    const filteredProject = projects.filter(
         (project) =>
             !data.client_id || String(project.client_id) === data.client_id,
     );
@@ -752,29 +752,29 @@ function CreatePaymentTimelineModal({
             onSuccess: () => {
                 reset();
                 clearErrors();
-                setOpen(false);
+                setTerbuka(false);
             },
-            onError: () => setOpen(true),
+            onError: () => setTerbuka(true),
         });
     };
 
     const close = () => {
         reset();
         clearErrors();
-        setOpen(false);
+        setTerbuka(false);
     };
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={setTerbuka}>
             <DialogTrigger asChild>
                 <Button type="button">
                     <Plus className="size-4" />
-                    Create payment
+                    Buat pembayaran
                 </Button>
             </DialogTrigger>
             <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
                 <DialogHeader>
-                    <DialogTitle>Create payment timeline</DialogTitle>
+                    <DialogTitle>Buat pembayaran timeline</DialogTitle>
                     <DialogDescription>
                         Add a planned or paid project payment item.
                     </DialogDescription>
@@ -782,7 +782,7 @@ function CreatePaymentTimelineModal({
 
                 <form onSubmit={submit} className="space-y-5">
                     <div className="grid gap-4 md:grid-cols-2">
-                        <Field label="Client" error={error('client_id')}>
+                        <Field label="Klien" error={error('client_id')}>
                             <select
                                 value={data.client_id}
                                 onChange={(event) =>
@@ -794,7 +794,7 @@ function CreatePaymentTimelineModal({
                                 }
                                 className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             >
-                                <option value="">Select client</option>
+                                <option value="">Select klien</option>
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
                                         {client.company_name}
@@ -803,7 +803,7 @@ function CreatePaymentTimelineModal({
                             </select>
                         </Field>
 
-                        <Field label="Project" error={error('project_id')}>
+                        <Field label="Proyek" error={error('project_id')}>
                             <select
                                 value={data.project_id}
                                 onChange={(event) =>
@@ -811,8 +811,8 @@ function CreatePaymentTimelineModal({
                                 }
                                 className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             >
-                                <option value="">Select project</option>
-                                {filteredProjects.map((project) => (
+                                <option value="">Select proyek</option>
+                                {filteredProject.map((project) => (
                                     <option key={project.id} value={project.id}>
                                         {project.name}
                                     </option>
@@ -820,7 +820,7 @@ function CreatePaymentTimelineModal({
                             </select>
                         </Field>
 
-                        <Field label="Title" error={error('title')}>
+                        <Field label="Judul" error={error('title')}>
                             <Input
                                 value={data.title}
                                 onChange={(event) =>
@@ -829,7 +829,7 @@ function CreatePaymentTimelineModal({
                             />
                         </Field>
 
-                        <Field label="Type" error={error('type')}>
+                        <Field label="Tipe" error={error('type')}>
                             <select
                                 value={data.type}
                                 onChange={(event) =>
@@ -876,7 +876,7 @@ function CreatePaymentTimelineModal({
                         </Field>
 
                         <Field
-                            label="Planned amount"
+                            label="Direncanakan amount"
                             error={error('planned_amount')}
                         >
                             <Input
@@ -893,7 +893,7 @@ function CreatePaymentTimelineModal({
                             />
                         </Field>
 
-                        <Field label="Paid amount" error={error('paid_amount')}>
+                        <Field label="Terbayar amount" error={error('paid_amount')}>
                             <Input
                                 type="number"
                                 min="0"
@@ -922,7 +922,7 @@ function CreatePaymentTimelineModal({
                         </Field>
 
                         <Field
-                            label="Payment method"
+                            label="Metode pembayaran"
                             error={error('payment_method')}
                         >
                             <select
@@ -935,8 +935,8 @@ function CreatePaymentTimelineModal({
                                 }
                                 className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             >
-                                <option value="">No method</option>
-                                {paymentMethods.map((method) => (
+                                <option value="">Tidak method</option>
+                                {paymentMetodes.map((method) => (
                                     <option key={method} value={method}>
                                         {method}
                                     </option>
@@ -944,7 +944,7 @@ function CreatePaymentTimelineModal({
                             </select>
                         </Field>
 
-                        <Field label="Due date" error={error('due_date')}>
+                        <Field label="Tanggal jatuh tempo" error={error('due_date')}>
                             <Input
                                 type="date"
                                 value={data.due_date}
@@ -954,7 +954,7 @@ function CreatePaymentTimelineModal({
                             />
                         </Field>
 
-                        <Field label="Paid at" error={error('paid_at')}>
+                        <Field label="Terbayar at" error={error('paid_at')}>
                             <Input
                                 type="date"
                                 value={data.paid_at}
@@ -1030,7 +1030,7 @@ function CreatePaymentTimelineModal({
                     </div>
 
                     <div className="grid gap-4 md:grid-cols-2">
-                        <Field label="Description" error={error('description')}>
+                        <Field label="Deskripsi" error={error('description')}>
                             <textarea
                                 value={data.description}
                                 onChange={(event) =>
@@ -1039,7 +1039,7 @@ function CreatePaymentTimelineModal({
                                 className="min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                             />
                         </Field>
-                        <Field label="Admin notes" error={error('admin_notes')}>
+                        <Field label="Notes admin" error={error('admin_notes')}>
                             <textarea
                                 value={data.admin_notes}
                                 onChange={(event) =>
@@ -1050,7 +1050,7 @@ function CreatePaymentTimelineModal({
                         </Field>
                     </div>
 
-                    <Field label="Client notes" error={error('client_notes')}>
+                    <Field label="Catatan klien" error={error('client_notes')}>
                         <textarea
                             value={data.client_notes}
                             onChange={(event) =>
@@ -1071,7 +1071,7 @@ function CreatePaymentTimelineModal({
                                 )
                             }
                         />
-                        Additional charge
+                        Biaya tambahan
                     </label>
 
                     <DialogFooter>
@@ -1081,11 +1081,11 @@ function CreatePaymentTimelineModal({
                                 variant="outline"
                                 onClick={close}
                             >
-                                Cancel
+                                Batal
                             </Button>
                         </DialogClose>
                         <Button type="submit" disabled={processing}>
-                            {processing ? 'Creating...' : 'Create payment'}
+                            {processing ? 'Membuat...' : 'Buat pembayaran'}
                         </Button>
                     </DialogFooter>
                 </form>

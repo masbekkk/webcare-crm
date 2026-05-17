@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import {
     cleanQuery,
     Field,
-    FilterActions,
+    FilterAksi,
     NativeSelect,
     Pagination,
     Stat,
@@ -96,7 +96,7 @@ export default function IssuesIndex({
     users: Option[];
 }) {
     const [form, setForm] = useState(normalize(filters));
-    const filteredProjects = projects.filter(
+    const filteredProject = projects.filter(
         (project) =>
             !form.client_id || String(project.client_id) === form.client_id,
     );
@@ -124,12 +124,12 @@ export default function IssuesIndex({
 
     return (
         <>
-            <Head title="Issue list" />
+            <Head title="Daftar masalah" />
             <div className="p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold text-[#101828]">
-                            Issue list
+                            Daftar masalah
                         </h1>
                         <p className="mt-1 text-sm text-[#667085]">
                             Track client issues, ownership, due dates, and
@@ -146,16 +146,16 @@ export default function IssuesIndex({
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     <Stat
-                        title="Filtered issues"
+                        title="Issue terfilter"
                         value={`${stats.total_count}`}
                     />
-                    <Stat title="Open" value={`${stats.open_count}`} />
+                    <Stat title="Terbuka" value={`${stats.open_count}`} />
                     <Stat
-                        title="In progress"
+                        title="Dalam proses"
                         value={`${stats.in_progress_count}`}
                     />
                     <Stat
-                        title="High priority"
+                        title="Prioritas tinggi"
                         value={`${stats.high_priority_count}`}
                     />
                 </div>
@@ -165,7 +165,7 @@ export default function IssuesIndex({
                     className="mt-6 rounded-lg border border-[#E4E7EC] bg-white p-5"
                 >
                     <div className="grid gap-4 lg:grid-cols-4">
-                        <Field label="Search">
+                        <Field label="Cari">
                             <Input
                                 value={form.search}
                                 onChange={(event) =>
@@ -173,14 +173,14 @@ export default function IssuesIndex({
                                 }
                             />
                         </Field>
-                        <Field label="Client">
+                        <Field label="Klien">
                             <NativeSelect
                                 value={form.client_id}
                                 onChange={(value) =>
                                     setFilter('client_id', value)
                                 }
                             >
-                                <option value="">All clients</option>
+                                <option value="">All klien</option>
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
                                         {client.company_name}
@@ -188,15 +188,15 @@ export default function IssuesIndex({
                                 ))}
                             </NativeSelect>
                         </Field>
-                        <Field label="Project">
+                        <Field label="Proyek">
                             <NativeSelect
                                 value={form.project_id}
                                 onChange={(value) =>
                                     setFilter('project_id', value)
                                 }
                             >
-                                <option value="">All projects</option>
-                                {filteredProjects.map((project) => (
+                                <option value="">All proyek</option>
+                                {filteredProject.map((project) => (
                                     <option key={project.id} value={project.id}>
                                         {project.name}
                                     </option>
@@ -208,7 +208,7 @@ export default function IssuesIndex({
                                 value={form.status}
                                 onChange={(value) => setFilter('status', value)}
                             >
-                                <option value="">All statuses</option>
+                                <option value="">All status</option>
                                 {statuses.map((status) => (
                                     <option key={status} value={status}>
                                         {status}
@@ -216,14 +216,14 @@ export default function IssuesIndex({
                                 ))}
                             </NativeSelect>
                         </Field>
-                        <Field label="Priority">
+                        <Field label="Prioritas">
                             <NativeSelect
                                 value={form.priority}
                                 onChange={(value) =>
                                     setFilter('priority', value)
                                 }
                             >
-                                <option value="">All priorities</option>
+                                <option value="">All prioritas</option>
                                 {priorities.map((priority) => (
                                     <option key={priority} value={priority}>
                                         {priority}
@@ -231,14 +231,14 @@ export default function IssuesIndex({
                                 ))}
                             </NativeSelect>
                         </Field>
-                        <Field label="Assignee">
+                        <Field label="Penanggung jawab">
                             <NativeSelect
                                 value={form.assigned_to}
                                 onChange={(value) =>
                                     setFilter('assigned_to', value)
                                 }
                             >
-                                <option value="">All assignees</option>
+                                <option value="">All penanggung jawab</option>
                                 {users.map((user) => (
                                     <option key={user.id} value={user.id}>
                                         {user.name}
@@ -265,7 +265,7 @@ export default function IssuesIndex({
                             />
                         </Field>
                     </div>
-                    <FilterActions
+                    <FilterAksi
                         summary={`${stats.total_count} issues match current filters.`}
                         onReset={reset}
                     />
@@ -276,14 +276,14 @@ export default function IssuesIndex({
                         <table className="w-full min-w-[1100px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
-                                    <th className="px-5 py-3">Issue</th>
-                                    <th className="px-5 py-3">Client</th>
-                                    <th className="px-5 py-3">Owner</th>
-                                    <th className="px-5 py-3">Due</th>
+                                    <th className="px-5 py-3">Masalah</th>
+                                    <th className="px-5 py-3">Klien</th>
+                                    <th className="px-5 py-3">Pemilik</th>
+                                    <th className="px-5 py-3">Jatuh tempo</th>
                                     <th className="px-5 py-3">Status</th>
-                                    <th className="px-5 py-3">Priority</th>
+                                    <th className="px-5 py-3">Prioritas</th>
                                     <th className="px-5 py-3 text-right">
-                                        Actions
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
@@ -310,10 +310,10 @@ export default function IssuesIndex({
                                             {issue.client.company_name}
                                         </td>
                                         <td className="px-5 py-4 text-xs text-[#667085]">
-                                            Reporter:{' '}
+                                            Pelapor:{' '}
                                             {issue.reporter?.name ?? '-'}
                                             <br />
-                                            Assignee:{' '}
+                                            Penanggung jawab:{' '}
                                             {issue.assignee?.name ?? '-'}
                                             <br />
                                             Files: {issue.attachments_count}
@@ -368,7 +368,7 @@ export default function IssuesIndex({
 
                     {issues.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No issues found.
+                            Tidak ada masalah ditemukan.
                         </div>
                     )}
 

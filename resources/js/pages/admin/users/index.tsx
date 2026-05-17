@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowUpDown, Edit, Plus, Search, Trash2, X } from 'lucide-react';
+import { ArrowDown, Edit, Plus, Search, Trash2, X } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
 import {
@@ -24,7 +24,7 @@ type UserRow = {
     } | null;
 };
 
-type PaginatedUsers = {
+type PaginatedUser = {
     data: UserRow[];
     from: number | null;
     links: Array<{ url: string | null; label: string; active: boolean }>;
@@ -43,12 +43,12 @@ type Stats = {
     client_count: number;
 };
 
-export default function UsersIndex({
+export default function UserIndex({
     users,
     filters,
     stats,
 }: {
-    users: PaginatedUsers;
+    users: PaginatedUser;
     filters: Filters;
     stats: Stats;
 }) {
@@ -98,12 +98,12 @@ export default function UsersIndex({
 
     return (
         <>
-            <Head title="Users" />
+            <Head title="User" />
             <div className="p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold text-[#101828]">
-                            Users
+                            User
                         </h1>
                         <p className="mt-1 text-sm text-[#667085]">
                             Manage admin and client portal accounts.
@@ -118,10 +118,10 @@ export default function UsersIndex({
                 </div>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <Stat title="Total users" value={stats.total_count} />
+                    <Stat title="Total pengguna" value={stats.total_count} />
                     <Stat title="Active" value={stats.active_count} />
-                    <Stat title="Admins" value={stats.admin_count} />
-                    <Stat title="Client users" value={stats.client_count} />
+                    <Stat title="Admin" value={stats.admin_count} />
+                    <Stat title="User klien" value={stats.client_count} />
                 </div>
 
                 <form
@@ -131,13 +131,13 @@ export default function UsersIndex({
                     <Input
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
-                        placeholder="Search users or clients..."
+                        placeholder="Cari pengguna atau klien..."
                         className="sm:max-w-sm"
                     />
                     <div className="flex gap-2">
                         <Button type="submit">
                             <Search className="size-4" />
-                            Search
+                            Cari
                         </Button>
                         <Button type="button" variant="outline" onClick={reset}>
                             <X className="size-4" />
@@ -151,18 +151,18 @@ export default function UsersIndex({
                         <table className="w-full min-w-[920px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
-                                    <th className="px-5 py-3">No.</th>
+                                    <th className="px-5 py-3">Tidak.</th>
                                     <SortableHeader href={sortUrl('user')}>
                                         User
                                     </SortableHeader>
-                                    <th className="px-5 py-3">Role</th>
+                                    <th className="px-5 py-3">Peran</th>
                                     <SortableHeader href={sortUrl('client')}>
                                         Client
                                     </SortableHeader>
-                                    <th className="px-5 py-3">Phone</th>
+                                    <th className="px-5 py-3">Telepon</th>
                                     <th className="px-5 py-3">Status</th>
                                     <th className="px-5 py-3 text-right">
-                                        Actions
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
@@ -238,7 +238,7 @@ export default function UsersIndex({
 
                     {users.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No users found.
+                            Tidak users found.
                         </div>
                     )}
 
@@ -296,7 +296,7 @@ function SortableHeader({
         <th className="px-5 py-3">
             <Link href={href} className="inline-flex items-center gap-1">
                 {children}
-                <ArrowUpDown className="size-3.5" />
+                <ArrowDown className="size-3.5" />
             </Link>
         </th>
     );

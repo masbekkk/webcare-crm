@@ -20,7 +20,7 @@ import { Input } from '@/components/ui/input';
 import {
     cleanQuery,
     Field,
-    FilterActions,
+    FilterAksi,
     Pagination,
     Stat,
     type PaginationLink,
@@ -47,7 +47,7 @@ type ProjectRow = {
     payment_timelines_count: number;
 };
 
-type PaginatedProjects = {
+type PaginatedProject = {
     data: ProjectRow[];
     from: number | null;
     links: PaginationLink[];
@@ -60,12 +60,12 @@ type Stats = {
     blocked_count: number;
 };
 
-export default function ProjectsIndex({
+export default function ProjectIndex({
     projects,
     filters,
     stats,
 }: {
-    projects: PaginatedProjects;
+    projects: PaginatedProject;
     filters: Filters;
     stats: Stats;
 }) {
@@ -111,12 +111,12 @@ export default function ProjectsIndex({
 
     return (
         <>
-            <Head title="Projects" />
+            <Head title="Project" />
             <div className="p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold text-[#101828]">
-                            Projects
+                            Project
                         </h1>
                         <p className="mt-1 text-sm text-[#667085]">
                             Manage client projects, links, members, and payment
@@ -133,15 +133,15 @@ export default function ProjectsIndex({
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     <Stat
-                        title="Filtered projects"
+                        title="Project terfilter"
                         value={`${stats.total_count}`}
                     />
                     <Stat title="Live" value={`${stats.live_count}`} />
                     <Stat
-                        title="In progress"
+                        title="Dalam proses"
                         value={`${stats.in_progress_count}`}
                     />
-                    <Stat title="Blocked" value={`${stats.blocked_count}`} />
+                    <Stat title="Terblokir" value={`${stats.blocked_count}`} />
                 </div>
 
                 <form
@@ -149,7 +149,7 @@ export default function ProjectsIndex({
                     className="mt-6 rounded-lg border border-[#E4E7EC] bg-white p-5"
                 >
                     <div className="grid gap-4 lg:grid-cols-3">
-                        <Field label="Search">
+                        <Field label="Cari">
                             <Input
                                 value={form.search}
                                 onChange={(event) =>
@@ -161,7 +161,7 @@ export default function ProjectsIndex({
                             />
                         </Field>
                     </div>
-                    <FilterActions
+                    <FilterAksi
                         summary={`${stats.total_count} projects match current filters.`}
                         onReset={reset}
                     />
@@ -172,7 +172,7 @@ export default function ProjectsIndex({
                         <table className="w-full min-w-[960px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
-                                    <th className="w-20 px-5 py-3">No</th>
+                                    <th className="w-20 px-5 py-3">Tidak</th>
                                     <th className="px-5 py-3">
                                         <SortButton
                                             active={form.sort === 'project'}
@@ -191,12 +191,12 @@ export default function ProjectsIndex({
                                             Client
                                         </SortButton>
                                     </th>
-                                    <th className="px-5 py-3">Type</th>
+                                    <th className="px-5 py-3">Tipe</th>
                                     <th className="px-5 py-3">Status</th>
-                                    <th className="px-5 py-3">Payment</th>
-                                    <th className="px-5 py-3">Relations</th>
+                                    <th className="px-5 py-3">Pembayaran</th>
+                                    <th className="px-5 py-3">Relasi</th>
                                     <th className="px-5 py-3 text-right">
-                                        Actions
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
@@ -270,7 +270,7 @@ export default function ProjectsIndex({
 
                     {projects.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No projects found.
+                            Tidak projects found.
                         </div>
                     )}
 

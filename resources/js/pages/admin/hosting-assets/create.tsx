@@ -20,11 +20,11 @@ export default function HostingAssetsCreate({
 }) {
     return (
         <>
-            <Head title="Create hosting asset" />
+            <Head title="Buat aset hosting" />
             <div className="p-6">
                 <div className="mb-6">
                     <h1 className="text-2xl font-semibold text-[#101828]">
-                        Create hosting asset
+                        Buat aset hosting
                     </h1>
                     <p className="mt-1 text-sm text-[#667085]">
                         Track providers, panels, servers, and hosting renewals.

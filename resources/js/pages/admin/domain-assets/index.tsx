@@ -50,12 +50,12 @@ export default function DomainAssetsIndex({
 
     return (
         <>
-            <Head title="Domain assets" />
+            <Head title="Aset domain" />
             <div className="p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold text-[#101828]">
-                            Domain assets
+                            Aset domain
                         </h1>
                         <p className="mt-1 text-sm text-[#667085]">
                             Manage domain ownership, registrar, and renewals.
@@ -75,12 +75,12 @@ export default function DomainAssetsIndex({
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
                                     <th className="px-5 py-3">Domain</th>
-                                    <th className="px-5 py-3">Client</th>
-                                    <th className="px-5 py-3">Project</th>
-                                    <th className="px-5 py-3">Dates</th>
-                                    <th className="px-5 py-3">Renewal</th>
+                                    <th className="px-5 py-3">Klien</th>
+                                    <th className="px-5 py-3">Proyek</th>
+                                    <th className="px-5 py-3">Date</th>
+                                    <th className="px-5 py-3">Perpanjangan</th>
                                     <th className="px-5 py-3 text-right">
-                                        Actions
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
@@ -102,7 +102,7 @@ export default function DomainAssetsIndex({
                                             {domainAsset.project?.name ?? '-'}
                                         </td>
                                         <td className="px-5 py-4 text-xs text-[#667085]">
-                                            Registered:{' '}
+                                            Daftared:{' '}
                                             {formatDate(
                                                 domainAsset.registered_at,
                                             )}
@@ -113,7 +113,7 @@ export default function DomainAssetsIndex({
                                         <td className="px-5 py-4">
                                             <span className="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-500">
                                                 {domainAsset.auto_renew
-                                                    ? 'Auto'
+                                                    ? 'Otomatis'
                                                     : 'Manual'}
                                             </span>
                                         </td>
@@ -157,7 +157,7 @@ export default function DomainAssetsIndex({
 
                     {domainAssets.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No domain assets found.
+                            Tidak domain assets found.
                         </div>
                     )}
 

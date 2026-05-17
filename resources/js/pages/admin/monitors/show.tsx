@@ -84,7 +84,7 @@ export default function MonitorsShow({
                             href={monitorsIndex()}
                             className="text-sm font-semibold text-brand-500"
                         >
-                            Back to monitors
+                            Kembali ke monitor
                         </Link>
                         <h1 className="mt-3 text-2xl font-semibold text-[#101828]">
                             {monitor.name}
@@ -142,7 +142,7 @@ export default function MonitorsShow({
                         value={String(monitor.check_logs_count)}
                     />
                     <Stat
-                        title="Incidents"
+                        title="Incident"
                         value={String(monitor.incidents_count)}
                     />
                 </div>
@@ -151,9 +151,9 @@ export default function MonitorsShow({
                     <Panel title="Monitor target">
                         <dl className="grid gap-4 text-sm">
                             <Detail label="URL" value={monitor.url} />
-                            <Detail label="Method" value={monitor.method} />
+                            <Detail label="Metode" value={monitor.method} />
                             <Detail
-                                label="Expected status"
+                                label="Status yang diharapkan"
                                 value={String(monitor.expected_status_code)}
                             />
                             <Detail
@@ -170,7 +170,7 @@ export default function MonitorsShow({
                     <Panel title="Project">
                         <dl className="grid gap-4 text-sm">
                             <Detail
-                                label="Client"
+                                label="Klien"
                                 value={monitor.project.client.company_name}
                             />
                             <div>
@@ -197,7 +197,7 @@ export default function MonitorsShow({
                         </dl>
                     </Panel>
 
-                    <Panel title="Last result">
+                    <Panel title="Hasil terakhir">
                         <dl className="grid gap-4 text-sm sm:grid-cols-2">
                             <Detail
                                 label="Last checked"
@@ -212,11 +212,11 @@ export default function MonitorsShow({
                                 value={dateTime(monitor.last_recovered_at)}
                             />
                             <Detail
-                                label="Consecutive failures"
+                                label="Gagal beruntun"
                                 value={String(monitor.consecutive_failures)}
                             />
                             <Detail
-                                label="Consecutive successes"
+                                label="Berhasil beruntun"
                                 value={String(monitor.consecutive_successes)}
                             />
                         </dl>
@@ -229,7 +229,7 @@ export default function MonitorsShow({
                                 value={dateTime(monitor.created_at)}
                             />
                             <Detail
-                                label="Updated"
+                                label="Tidakrmaldated"
                                 value={dateTime(monitor.updated_at)}
                             />
                         </dl>

@@ -121,7 +121,7 @@ export default function MonitorForm({
         (project) => String(project.id) === data.project_id,
     );
     const selectedClientId = data.client_id || String(selectedProject?.client_id ?? '');
-    const filteredProjects = projects.filter(
+    const filteredProject = projects.filter(
         (project) =>
             !selectedClientId || String(project.client_id) === selectedClientId,
     );
@@ -157,7 +157,7 @@ export default function MonitorForm({
                     </p>
                 </div>
                 <div className="grid gap-5 lg:grid-cols-2">
-                    <Field label="Client" required>
+                    <Field label="Klien" required>
                         <select
                             value={selectedClientId}
                             onChange={(event) =>
@@ -170,7 +170,7 @@ export default function MonitorForm({
                             }
                             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
-                            <option value="">Select client</option>
+                            <option value="">Select klien</option>
                             {clients.map((client) => (
                                 <option key={client.id} value={client.id}>
                                     {client.company_name}
@@ -180,7 +180,7 @@ export default function MonitorForm({
                     </Field>
 
                     <Field
-                        label="Project"
+                        label="Proyek"
                         error={error('project_id')}
                         required
                     >
@@ -195,8 +195,8 @@ export default function MonitorForm({
                             }
                             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
-                            <option value="">Select project</option>
-                            {filteredProjects.map((project) => (
+                            <option value="">Select proyek</option>
+                            {filteredProject.map((project) => (
                                 <option key={project.id} value={project.id}>
                                     {project.name}
                                 </option>
@@ -256,7 +256,7 @@ export default function MonitorForm({
                             }}
                             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
-                            <option value="">No linked project URL</option>
+                            <option value="">Tidak linked project URL</option>
                             {filteredProjectLinks.map((projectLink) => (
                                 <option
                                     key={projectLink.id}
@@ -268,7 +268,7 @@ export default function MonitorForm({
                         </select>
                     </Field>
 
-                    <Field label="Method" error={error('method')}>
+                    <Field label="Metode" error={error('method')}>
                         <SelectField
                             value={data.method}
                             options={methods}
@@ -276,7 +276,7 @@ export default function MonitorForm({
                         />
                     </Field>
                     <Field
-                        label="Expected status code"
+                        label="Kode status yang diharapkan"
                         error={error('expected_status_code')}
                     >
                         <Input
@@ -293,7 +293,7 @@ export default function MonitorForm({
                         />
                     </Field>
                     <Field
-                        label="Timeout seconds"
+                        label="Timeout detik"
                         error={error('timeout_seconds')}
                     >
                         <Input
@@ -342,7 +342,7 @@ export default function MonitorForm({
                             Runtime status
                         </h2>
                         <p className="mt-1 text-sm text-[#667085]">
-                            Usually filled by checks. Edit manually only when
+                            Biasanya diisi oleh pemeriksaan. Edit manual hanya jika
                             correcting monitor state.
                         </p>
                     </div>
@@ -390,7 +390,7 @@ export default function MonitorForm({
                         />
                     </Field>
                         <Field
-                            label="Consecutive failures"
+                            label="Gagal beruntun"
                             error={error('consecutive_failures')}
                         >
                         <Input
@@ -406,7 +406,7 @@ export default function MonitorForm({
                         />
                     </Field>
                         <Field
-                            label="Consecutive successes"
+                            label="Berhasil beruntun"
                             error={error('consecutive_successes')}
                         >
                         <Input
@@ -425,7 +425,7 @@ export default function MonitorForm({
 
                     <div className="mt-5 grid gap-5 lg:grid-cols-3">
                         <Field
-                            label="Last checked at"
+                            label="Terakhir diperiksa"
                             error={error('last_checked_at')}
                         >
                         <Input
@@ -436,7 +436,7 @@ export default function MonitorForm({
                             }
                         />
                     </Field>
-                        <Field label="Last down at" error={error('last_down_at')}>
+                        <Field label="Terakhir down" error={error('last_down_at')}>
                         <Input
                             type="datetime-local"
                             value={data.last_down_at}
@@ -446,7 +446,7 @@ export default function MonitorForm({
                         />
                     </Field>
                         <Field
-                            label="Last recovered at"
+                            label="Terakhir pulih"
                             error={error('last_recovered_at')}
                         >
                         <Input
@@ -466,11 +466,11 @@ export default function MonitorForm({
 
             <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-[#E4E7EC] bg-[#F9FAFB]/95 py-4 backdrop-blur">
                 <Button variant="outline" asChild>
-                    <Link href={monitorsIndex()}>Cancel</Link>
+                    <Link href={monitorsIndex()}>Batal</Link>
                 </Button>
                 <Button type="submit" disabled={processing}>
                     <Save className="size-4" />
-                    {processing ? 'Saving...' : 'Save monitor'}
+                    {processing ? 'Menyimpan...' : 'Simpan monitor'}
                 </Button>
             </div>
         </form>

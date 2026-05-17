@@ -9,7 +9,7 @@ type Option = {
     company_name?: string;
 };
 
-export default function ProjectsCreate({
+export default function ProjectCreate({
     clients,
     users,
 }: {
@@ -19,14 +19,14 @@ export default function ProjectsCreate({
 }) {
     return (
         <>
-            <Head title="Create project" />
+            <Head title="Buat proyek" />
             <div className="p-6">
                 <div className="mb-6">
                     <h1 className="text-2xl font-semibold text-[#101828]">
-                        Create project
+                        Buat proyek
                     </h1>
                     <p className="mt-1 text-sm text-[#667085]">
-                        Create project data together with links, members, and
+                        Buat proyek data together with links, members, and
                         payment timelines.
                     </p>
                 </div>

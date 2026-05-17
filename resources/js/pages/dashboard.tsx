@@ -11,7 +11,7 @@ import {
     MoreHorizontal,
     Server,
     ShieldAlert,
-    Users,
+    User,
     Wrench,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -41,7 +41,7 @@ type Finance = {
     overdue_count: number;
 };
 
-type Monitoring = {
+type Pemantauan = {
     monitors: number;
     active_monitors: number;
     monitors_up: number;
@@ -69,7 +69,7 @@ type IssueRow = {
     project: Relation;
 };
 
-type PaymentRow = {
+type PembayaranRow = {
     id: number;
     title: string;
     planned_amount: string;
@@ -274,7 +274,7 @@ function EmptyState({ text }: { text: string }) {
     );
 }
 
-export default function Dashboard({
+export default function Dasbor({
     summary,
     finance,
     monitoring,
@@ -286,10 +286,10 @@ export default function Dashboard({
 }: {
     summary: Summary;
     finance: Finance;
-    monitoring: Monitoring;
+    monitoring: Pemantauan;
     projectStatus: ProjectStatus[];
     recentIssues: IssueRow[];
-    upcomingPayments: PaymentRow[];
+    upcomingPayments: PembayaranRow[];
     expiringAssets: AssetRow[];
     maintenanceSchedule: MaintenanceRow[];
 }) {
@@ -303,12 +303,12 @@ export default function Dashboard({
 
     return (
         <>
-            <Head title="Dashboard" />
+            <Head title="Dasbor" />
             <div className="space-y-6 p-4 lg:p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <h1 className="text-3xl font-semibold text-[#101828]">
-                            Dashboard
+                            Dasbor
                         </h1>
                         <p className="mt-2 text-sm text-[#475467]">
                             Snapshot projects, payments, monitoring, issues,
@@ -324,16 +324,16 @@ export default function Dashboard({
 
                 <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
                     <MetricCard
-                        title="Clients"
+                        title="Client"
                         value={`${summary.clients}`}
-                        subtitle="Total managed clients"
+                        subtitle="Total klien dikelola"
                         href={clientsIndex.url()}
-                        icon={Users}
+                        icon={User}
                         trend={`${summary.clients}`}
                         trendTone="up"
                     />
                     <MetricCard
-                        title="Active projects"
+                        title="Project aktif"
                         value={`${summary.active_projects}`}
                         subtitle={`${activeProjectPercent}% of total projects`}
                         href={projectsIndex.url()}
@@ -342,16 +342,16 @@ export default function Dashboard({
                         trendTone="up"
                     />
                     <MetricCard
-                        title="Open issues"
+                        title="Issue terbuka"
                         value={`${summary.open_issues}`}
-                        subtitle="Needs follow-up"
+                        subtitle="Perlu tindak lanjut"
                         href={issuesIndex.url()}
                         icon={AlertTriangle}
                         trend={`${summary.open_issues}`}
                         trendTone={summary.open_issues > 0 ? 'down' : 'up'}
                     />
                     <MetricCard
-                        title="Monitor risk"
+                        title="Risiko monitor"
                         value={`${monitorRisk}`}
                         subtitle={`${monitoring.monitors_down} down, ${monitoring.ongoing_incidents} incidents`}
                         href={monitorsIndex.url()}
@@ -363,7 +363,7 @@ export default function Dashboard({
 
                 <div className="grid gap-6 xl:grid-cols-12">
                     <div className="space-y-6 xl:col-span-7">
-                        <PaymentHealthCard
+                        <PembayaranHealthCard
                             finance={finance}
                             paymentProgress={paymentProgress}
                         />
@@ -374,7 +374,7 @@ export default function Dashboard({
                     </div>
 
                     <div className="space-y-6 xl:col-span-5">
-                        <PaymentTargetCard
+                        <PembayaranTargetCard
                             finance={finance}
                             paymentProgress={paymentProgress}
                         />
@@ -384,7 +384,7 @@ export default function Dashboard({
 
                 <div className="grid gap-6 xl:grid-cols-2">
                     <IssueList issues={recentIssues} />
-                    <PaymentList payments={upcomingPayments} />
+                    <PembayaranList payments={upcomingPayments} />
                 </div>
 
                 <div className="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
@@ -396,7 +396,7 @@ export default function Dashboard({
     );
 }
 
-function PaymentHealthCard({
+function PembayaranHealthCard({
     finance,
     paymentProgress,
 }: {
@@ -406,21 +406,21 @@ function PaymentHealthCard({
     return (
         <Card className="p-6">
             <CardHeader
-                title="Payment Health"
-                subtitle="Planned, paid, and remaining collection"
+                title="Kesehatan Pembayaran"
+                subtitle="Rencana, terbayar, dan sisa tagihan"
                 href={paymentTimelinesIndex.url()}
             />
             <div className="mt-8 grid gap-4 sm:grid-cols-3">
-                <MiniStat label="Planned" value={money(finance.planned_amount)} />
-                <MiniStat label="Paid" value={money(finance.paid_amount)} />
+                <MiniStat label="Direncanakan" value={money(finance.planned_amount)} />
+                <MiniStat label="Terbayar" value={money(finance.paid_amount)} />
                 <MiniStat
-                    label="Remaining"
+                    label="Sisa"
                     value={money(finance.remaining_amount)}
                 />
             </div>
             <div className="mt-8">
                 <div className="flex items-center justify-between text-sm font-medium text-[#475467]">
-                    <span>Collection progress</span>
+                    <span>Progres penagihan</span>
                     <span>{paymentProgress}%</span>
                 </div>
                 <div className="mt-3 h-3 overflow-hidden rounded-full bg-[#F2F4F7]">
@@ -434,7 +434,7 @@ function PaymentHealthCard({
     );
 }
 
-function PaymentTargetCard({
+function PembayaranTargetCard({
     finance,
     paymentProgress,
 }: {
@@ -447,14 +447,14 @@ function PaymentTargetCard({
         <Card className="overflow-hidden">
             <div className="p-7 pb-8">
                 <CardHeader
-                    title="Monthly Target"
-                    subtitle="Collection target progress"
+                    title="Target Bulanan"
+                    subtitle="Progres target penagihan"
                 />
                 <div className="relative mx-auto mt-8 h-44 max-w-[360px]">
                     <svg
                         viewBox="0 0 200 120"
                         className="h-full w-full"
-                        aria-label={`Payment progress ${paymentProgress}%`}
+                        aria-label={`Progres pembayaran ${paymentProgress}%`}
                     >
                         <path
                             d="M 24 100 A 76 76 0 0 1 176 100"
@@ -479,8 +479,8 @@ function PaymentTargetCard({
                             {paymentProgress}%
                         </p>
                         <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-success-50 px-2.5 py-1 text-xs font-semibold text-success-600">
-                            <ArrowUpRight className="size-3.5" />
-                            On track
+                            <ArrowRight className="size-3.5" />
+                            Sesuai target
                         </span>
                     </div>
                 </div>
@@ -491,9 +491,9 @@ function PaymentTargetCard({
             </div>
             <div className="grid grid-cols-3 bg-[#F2F4F7] px-4 py-6">
                 <TargetSummary label="Target" value={money(finance.planned_amount)} />
-                <TargetSummary label="Revenue" value={money(finance.paid_amount)} />
+                <TargetSummary label="Pendapatan" value={money(finance.paid_amount)} />
                 <TargetSummary
-                    label="Pending"
+                    label="Tertunda"
                     value={money(finance.remaining_amount)}
                 />
             </div>
@@ -511,13 +511,13 @@ function ProjectStatusCard({
     return (
         <Card className="p-6">
             <CardHeader
-                title="Project Status"
-                subtitle="Distribution across project workflow"
+                title="Status Project"
+                subtitle="Distribusi alur kerja proyek"
                 href={projectsIndex.url()}
             />
             {projectStatus.length === 0 ? (
                 <div className="mt-6">
-                    <EmptyState text="No projects yet." />
+                    <EmptyState text="Belum ada proyek." />
                 </div>
             ) : (
                 <div className="mt-8 space-y-5">
@@ -549,12 +549,12 @@ function ProjectStatusCard({
     );
 }
 
-function MonitorHealthCard({ monitoring }: { monitoring: Monitoring }) {
+function MonitorHealthCard({ monitoring }: { monitoring: Pemantauan }) {
     return (
         <Card className="p-6">
             <CardHeader
-                title="Monitor Health"
-                subtitle="Availability and incident overview"
+                title="Kesehatan Monitor"
+                subtitle="Ringkasan ketersediaan dan insiden"
                 href={incidentsIndex.url()}
             />
             <div className="mt-6 grid grid-cols-2 gap-4">
@@ -565,7 +565,7 @@ function MonitorHealthCard({ monitoring }: { monitoring: Monitoring }) {
                     icon={MonitorCheck}
                 />
                 <MonitorStat
-                    label="Up"
+                    label="Tidakrmal"
                     value={monitoring.monitors_up}
                     total={monitoring.monitors}
                     icon={Activity}
@@ -577,7 +577,7 @@ function MonitorHealthCard({ monitoring }: { monitoring: Monitoring }) {
                     icon={ShieldAlert}
                 />
                 <MonitorStat
-                    label="Incidents"
+                    label="Incident"
                     value={monitoring.ongoing_incidents}
                     total={monitoring.monitors}
                     icon={AlertTriangle}
@@ -587,17 +587,17 @@ function MonitorHealthCard({ monitoring }: { monitoring: Monitoring }) {
     );
 }
 
-function IssueList({ issues }: { issues: IssueRow[] }) {
+function IssueList({ issues = [] }: { issues?: IssueRow[] }) {
     return (
         <Card className="p-6">
             <CardHeader
-                title="Recent Issues"
-                subtitle="Latest unresolved client work"
+                title="Issue Terbaru"
+                subtitle="Pekerjaan klien terbaru yang belum selesai"
                 href={issuesIndex.url()}
             />
             <div className="mt-6">
                 {issues.length === 0 ? (
-                    <EmptyState text="No open issues." />
+                    <EmptyState text="Tidak ada masalah terbuka." />
                 ) : (
                     <div className="divide-y divide-[#E4E7EC]">
                         {issues.map((issue) => (
@@ -627,17 +627,17 @@ function IssueList({ issues }: { issues: IssueRow[] }) {
     );
 }
 
-function PaymentList({ payments }: { payments: PaymentRow[] }) {
+function PembayaranList({ payments = [] }: { payments?: PembayaranRow[] }) {
     return (
         <Card className="p-6">
             <CardHeader
-                title="Upcoming Payments"
-                subtitle="Unpaid timeline items"
+                title="Tidakrmalcoming Pembayaran"
+                subtitle="Item jadwal yang belum dibayar"
                 href={paymentTimelinesIndex.url()}
             />
             <div className="mt-6">
                 {payments.length === 0 ? (
-                    <EmptyState text="No unpaid payment timeline items." />
+                    <EmptyState text="Tidak ada item pembayaran yang belum dibayar." />
                 ) : (
                     <div className="divide-y divide-[#E4E7EC]">
                         {payments.map((payment) => (
@@ -671,13 +671,13 @@ function PaymentList({ payments }: { payments: PaymentRow[] }) {
     );
 }
 
-function AssetList({ assets }: { assets: AssetRow[] }) {
+function AssetList({ assets = [] }: { assets?: AssetRow[] }) {
     return (
         <Card className="p-6">
-            <CardHeader title="Expiring Assets" subtitle="Domains and hosting" />
+            <CardHeader title="Aset Akan Berakhir" subtitle="Domain dan hosting" />
             <div className="mt-6">
                 {assets.length === 0 ? (
-                    <EmptyState text="No domain or hosting renewals within 45 days." />
+                    <EmptyState text="Tidak ada perpanjangan domain atau hosting dalam 45 hari." />
                 ) : (
                     <div className="divide-y divide-[#E4E7EC]">
                         {assets.map((asset) => {
@@ -720,19 +720,19 @@ function AssetList({ assets }: { assets: AssetRow[] }) {
 }
 
 function MaintenanceList({
-    maintenanceSchedule,
+    maintenanceSchedule = [],
 }: {
-    maintenanceSchedule: MaintenanceRow[];
+    maintenanceSchedule?: MaintenanceRow[];
 }) {
     return (
         <Card className="p-6">
             <CardHeader
-                title="Maintenance Schedule"
-                subtitle="Planned operation work"
+                title="Jadwal Pemeliharaan"
+                subtitle="Direncanakan operation work"
             />
             <div className="mt-6">
                 {maintenanceSchedule.length === 0 ? (
-                    <EmptyState text="No planned maintenance." />
+                    <EmptyState text="Tidak ada pemeliharaan terencana." />
                 ) : (
                     <div className="divide-y divide-[#E4E7EC]">
                         {maintenanceSchedule.map((log) => (
@@ -747,7 +747,7 @@ function MaintenanceList({
                                         </p>
                                         <p className="mt-1 text-sm text-[#667085]">
                                             {log.project.name} /{' '}
-                                            {log.handler?.name ?? 'Unassigned'}
+                                            {log.handler?.name ?? 'Belum ditugaskan'}
                                         </p>
                                         <p className="mt-1 inline-flex items-center gap-1 text-xs text-[#667085]">
                                             <CalendarClock className="size-3.5" />
@@ -820,10 +820,10 @@ function ListRow({
     );
 }
 
-Dashboard.layout = {
+Dasbor.layout = {
     breadcrumbs: [
         {
-            title: 'Dashboard',
+            title: 'Dasbor',
             href: dashboard(),
         },
     ],

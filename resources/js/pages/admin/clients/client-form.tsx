@@ -154,10 +154,10 @@ export default function ClientForm({
         <form onSubmit={submit} className="flex flex-col gap-6">
             <section className="rounded-lg border border-[#E4E7EC] bg-white p-6">
                 <h2 className="text-base font-semibold text-[#101828]">
-                    Company
+                    Perusahaan
                 </h2>
                 <div className="mt-5 grid gap-5 lg:grid-cols-3">
-                    <Field label="Company name" error={error('company_name')}>
+                    <Field label="Name perusahaan" error={error('company_name')}>
                         <Input
                             value={data.company_name}
                             onChange={(event) =>
@@ -165,7 +165,7 @@ export default function ClientForm({
                             }
                         />
                     </Field>
-                    <Field label="Display name" error={error('display_name')}>
+                    <Field label="Name tampilan" error={error('display_name')}>
                         <Input
                             value={data.display_name}
                             onChange={(event) =>
@@ -188,7 +188,7 @@ export default function ClientForm({
                             ))}
                         </select>
                     </Field>
-                    <Field label="Company email" error={error('company_email')}>
+                    <Field label="Email perusahaan" error={error('company_email')}>
                         <Input
                             type="email"
                             value={data.company_email}
@@ -197,7 +197,7 @@ export default function ClientForm({
                             }
                         />
                     </Field>
-                    <Field label="Company phone" error={error('company_phone')}>
+                    <Field label="Telepon perusahaan" error={error('company_phone')}>
                         <Input
                             value={data.company_phone}
                             onChange={(event) =>
@@ -205,7 +205,7 @@ export default function ClientForm({
                             }
                         />
                     </Field>
-                    <Field label="City" error={error('city')}>
+                    <Field label="Kota" error={error('city')}>
                         <Input
                             value={data.city}
                             onChange={(event) =>
@@ -213,7 +213,7 @@ export default function ClientForm({
                             }
                         />
                     </Field>
-                    <Field label="Province" error={error('province')}>
+                    <Field label="Provinsi" error={error('province')}>
                         <Input
                             value={data.province}
                             onChange={(event) =>
@@ -223,7 +223,7 @@ export default function ClientForm({
                     </Field>
                 </div>
                 <div className="mt-5 grid gap-5 lg:grid-cols-2">
-                    <Field label="Address" error={error('address')}>
+                    <Field label="Alamat" error={error('address')}>
                         <textarea
                             value={data.address}
                             onChange={(event) =>
@@ -232,7 +232,7 @@ export default function ClientForm({
                             className="min-h-28 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         />
                     </Field>
-                    <Field label="Notes" error={error('notes')}>
+                    <Field label="Catatan" error={error('notes')}>
                         <textarea
                             value={data.notes}
                             onChange={(event) =>
@@ -247,7 +247,7 @@ export default function ClientForm({
             <section className="rounded-lg border border-[#E4E7EC] bg-white p-6">
                 <h2 className="text-base font-semibold text-[#101828]">PIC</h2>
                 <div className="mt-5 grid gap-5 lg:grid-cols-3">
-                    <Field label="PIC name" error={error('pic_name')}>
+                    <Field label="Name PIC" error={error('pic_name')}>
                         <Input
                             value={data.pic_name}
                             onChange={(event) =>
@@ -255,7 +255,7 @@ export default function ClientForm({
                             }
                         />
                     </Field>
-                    <Field label="PIC position" error={error('pic_position')}>
+                    <Field label="Jabatan PIC" error={error('pic_position')}>
                         <Input
                             value={data.pic_position}
                             onChange={(event) =>
@@ -263,7 +263,7 @@ export default function ClientForm({
                             }
                         />
                     </Field>
-                    <Field label="PIC email" error={error('pic_email')}>
+                    <Field label="Email PIC" error={error('pic_email')}>
                         <Input
                             type="email"
                             value={data.pic_email}
@@ -272,7 +272,7 @@ export default function ClientForm({
                             }
                         />
                     </Field>
-                    <Field label="PIC phone" error={error('pic_phone')}>
+                    <Field label="Telepon PIC" error={error('pic_phone')}>
                         <Input
                             value={data.pic_phone}
                             onChange={(event) =>
@@ -294,7 +294,7 @@ export default function ClientForm({
             <section className="rounded-lg border border-[#E4E7EC] bg-white p-6">
                 <div className="flex items-center justify-between gap-4">
                     <h2 className="text-base font-semibold text-[#101828]">
-                        Client users
+                        User klien
                     </h2>
                     <Button
                         type="button"
@@ -311,7 +311,7 @@ export default function ClientForm({
 
                 {data.users.length === 0 && (
                     <p className="mt-4 text-sm text-[#667085]">
-                        No client user added.
+                        Tidak client user added.
                     </p>
                 )}
 
@@ -349,7 +349,7 @@ export default function ClientForm({
                                 />
                             </Field>
                             <Field
-                                label={user.id ? 'New password' : 'Password'}
+                                label={user.id ? 'Password baru' : 'Password'}
                                 error={error(`users.${index}.password`)}
                             >
                                 <Input
@@ -362,7 +362,7 @@ export default function ClientForm({
                                     }
                                 />
                             </Field>
-                            <Field label="Phone">
+                            <Field label="Telepon">
                                 <Input
                                     value={user.phone}
                                     onChange={(event) =>
@@ -411,11 +411,11 @@ export default function ClientForm({
 
             <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-[#E4E7EC] bg-[#F9FAFB]/95 py-4 backdrop-blur">
                 <Button variant="outline" asChild>
-                    <Link href={clientsIndex()}>Cancel</Link>
+                    <Link href={clientsIndex()}>Batal</Link>
                 </Button>
                 <Button type="submit" disabled={processing}>
                     <Save className="size-4" />
-                    {processing ? 'Saving...' : 'Save client'}
+                    {processing ? 'Menyimpan...' : 'Simpan klien'}
                 </Button>
             </div>
         </form>

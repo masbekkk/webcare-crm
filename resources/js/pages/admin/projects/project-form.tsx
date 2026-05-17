@@ -106,8 +106,8 @@ type Props = {
     project?: ProjectPayload | null;
 };
 
-const projectTypes = [
-    'Company Profile',
+const projectTipes = [
+    'Perusahaan Profil',
     'E-Commerce',
     'ERP',
     'CRM',
@@ -133,7 +133,7 @@ const projectStatuses = [
 ];
 
 const paymentModels = ['one_time', 'subscription', 'custom'];
-const linkTypes = [
+const linkTipes = [
     'production',
     'staging',
     'repository',
@@ -145,7 +145,7 @@ const linkTypes = [
     'documentation',
     'other',
 ];
-const paymentTypes = [
+const paymentTipes = [
     'dp',
     'installment',
     'final_payment',
@@ -168,7 +168,7 @@ const paymentStatuses = [
     'overdue',
     'cancelled',
 ];
-const paymentMethods = [
+const paymentMetodes = [
     '',
     'bank_transfer',
     'cash',
@@ -228,7 +228,7 @@ function formData(project?: ProjectPayload | null): ProjectFormData {
             name: '',
             slug: '',
             description: '',
-            project_type: 'Company Profile',
+            project_type: 'Perusahaan Profil',
             contract_value: '0',
             payment_model: 'custom',
             status: 'draft',
@@ -360,7 +360,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
         setData('members', patchRow(data.members, index, value));
     };
 
-    const updatePayment = (
+    const updatePembayaran = (
         index: number,
         value: Partial<PaymentTimelineForm>,
     ) => {
@@ -389,7 +389,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                 description="Data utama untuk mengenali project dan status pengerjaan."
             >
                 <div className="grid gap-5 lg:grid-cols-2">
-                    <Field label="Client" error={error('client_id')}>
+                    <Field label="Klien" error={error('client_id')}>
                         <select
                             value={data.client_id}
                             onChange={(event) =>
@@ -397,7 +397,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                             }
                             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
-                            <option value="">Select client</option>
+                            <option value="">Select klien</option>
                             {clients.map((client) => (
                                 <option key={client.id} value={client.id}>
                                     {client.company_name}
@@ -406,7 +406,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                         </select>
                     </Field>
 
-                    <Field label="Project name" error={error('name')}>
+                    <Field label="Nama proyek" error={error('name')}>
                         <Input
                             value={data.name}
                             onChange={(event) =>
@@ -426,15 +426,15 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                 </div>
 
                 <div className="mt-5 grid gap-5 lg:grid-cols-3">
-                    <Field label="Project type" error={error('project_type')}>
+                    <Field label="Tipe proyek" error={error('project_type')}>
                         <SelectField
                             value={data.project_type}
                             onChange={(value) => setData('project_type', value)}
-                            options={projectTypes}
+                            options={projectTipes}
                         />
                     </Field>
 
-                    <Field label="Payment model" error={error('payment_model')}>
+                    <Field label="Pembayaran model" error={error('payment_model')}>
                         <SelectField
                             value={data.payment_model}
                             onChange={(value) =>
@@ -455,12 +455,12 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
             </FormSection>
 
             <FormSection
-                title="Commercial and schedule"
+                title="Komersial dan jadwal"
                 description="Nilai kontrak, model pembayaran, dan tanggal penting project."
             >
                 <div className="grid gap-5 lg:grid-cols-4">
                     <Field
-                        label="Contract value"
+                        label="Nilai kontrak"
                         error={error('contract_value')}
                     >
                         <Input
@@ -473,7 +473,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                         />
                     </Field>
 
-                    <Field label="Start date" error={error('start_date')}>
+                    <Field label="Date mulai" error={error('start_date')}>
                         <Input
                             type="date"
                             value={data.start_date}
@@ -516,7 +516,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                 description="Ruang lingkup pekerjaan, teknologi, dan catatan internal."
             >
                 <div className="grid gap-5 lg:grid-cols-2">
-                    <Field label="Description" error={error('description')}>
+                    <Field label="Deskripsi" error={error('description')}>
                         <textarea
                             value={data.description}
                             onChange={(event) =>
@@ -537,7 +537,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                     </Field>
 
                     <Field
-                        label="Internal notes"
+                        label="Notes internal"
                         error={error('internal_notes')}
                     >
                         <textarea
@@ -552,13 +552,13 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
             </FormSection>
 
             <RelationSection
-                title="Project links"
+                title="Tautan proyek"
                 description="URL penting seperti production, staging, repository, dan dokumentasi."
                 onAdd={() => setData('links', [...data.links, emptyLink()])}
             >
                 {data.links.length === 0 && (
                     <p className="py-4 text-sm text-[#667085]">
-                        No project link added.
+                        Tidak project link added.
                     </p>
                 )}
                 {data.links.map((link, index) => (
@@ -585,7 +585,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
 
                         <div className="grid gap-4 lg:grid-cols-3">
                             <Field
-                                label="Type"
+                                label="Tipe"
                                 error={error(`links.${index}.type`)}
                             >
                                 <SelectField
@@ -593,7 +593,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                     onChange={(value) =>
                                         updateLink(index, { type: value })
                                     }
-                                    options={linkTypes}
+                                    options={linkTipes}
                                 />
                             </Field>
                             <Field
@@ -635,7 +635,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                     }
                                 />
                             </Field>
-                            <Field label="Notes">
+                            <Field label="Catatan">
                                 <Input
                                     value={link.notes}
                                     onChange={(event) =>
@@ -657,7 +657,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                             })
                                         }
                                     />
-                                    Primary
+                                    Utama
                                 </label>
                                 <label className="flex items-center gap-2 text-sm">
                                     <input
@@ -686,7 +686,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
             >
                 {data.members.length === 0 && (
                     <p className="py-4 text-sm text-[#667085]">
-                        No member assigned.
+                        Tidak member assigned.
                     </p>
                 )}
                 {data.members.map((member, index) => (
@@ -725,7 +725,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                     }
                                     className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                                 >
-                                    <option value="">Select user</option>
+                                    <option value="">Select pengguna</option>
                                     {users.map((user) => (
                                         <option key={user.id} value={user.id}>
                                             {user.name} ({user.email})
@@ -733,7 +733,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                     ))}
                                 </select>
                             </Field>
-                            <Field label="Role">
+                            <Field label="Peran">
                                 <Input
                                     value={member.role}
                                     onChange={(event) =>
@@ -760,7 +760,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
             </RelationSection>
 
             <RelationSection
-                title="Payment timelines"
+                title="Jadwal pembayaran"
                 description="Rencana tagihan, pembayaran, jatuh tempo, dan catatan invoice."
                 onAdd={() =>
                     setData('payment_timelines', [
@@ -774,7 +774,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
             >
                 {data.payment_timelines.length === 0 && (
                     <p className="py-4 text-sm text-[#667085]">
-                        No payment timeline added.
+                        Tidak payment timeline added.
                     </p>
                 )}
                 {data.payment_timelines.map((payment, index) => (
@@ -784,7 +784,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                     >
                         <div className="mb-4 flex items-center justify-between gap-4">
                             <p className="text-sm font-semibold text-[#101828]">
-                                Payment #{index + 1}
+                                Pembayaran #{index + 1}
                             </p>
                             <RemoveButton
                                 compact
@@ -801,19 +801,19 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
 
                         <div className="grid gap-4 lg:grid-cols-4">
                             <Field
-                                label="Type"
+                                label="Tipe"
                                 error={error(`payment_timelines.${index}.type`)}
                             >
                                 <SelectField
                                     value={payment.type}
                                     onChange={(value) =>
-                                        updatePayment(index, { type: value })
+                                        updatePembayaran(index, { type: value })
                                     }
-                                    options={paymentTypes}
+                                    options={paymentTipes}
                                 />
                             </Field>
                             <Field
-                                label="Title"
+                                label="Judul"
                                 error={error(
                                     `payment_timelines.${index}.title`,
                                 )}
@@ -821,7 +821,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                 <Input
                                     value={payment.title}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             title: event.target.value,
                                         })
                                     }
@@ -833,7 +833,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                     min="1"
                                     value={payment.sequence_order}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             sequence_order: Number(
                                                 event.target.value,
                                             ),
@@ -845,7 +845,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                 <SelectField
                                     value={payment.status}
                                     onChange={(value) =>
-                                        updatePayment(index, { status: value })
+                                        updatePembayaran(index, { status: value })
                                     }
                                     options={paymentStatuses}
                                 />
@@ -853,25 +853,25 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                         </div>
 
                         <div className="mt-4 grid gap-4 lg:grid-cols-4">
-                            <Field label="Planned amount">
+                            <Field label="Direncanakan amount">
                                 <Input
                                     type="number"
                                     min="0"
                                     value={payment.planned_amount}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             planned_amount: event.target.value,
                                         })
                                     }
                                 />
                             </Field>
-                            <Field label="Paid amount">
+                            <Field label="Terbayar amount">
                                 <Input
                                     type="number"
                                     min="0"
                                     value={payment.paid_amount}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             paid_amount: event.target.value,
                                         })
                                     }
@@ -884,7 +884,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                     max="100"
                                     value={payment.percentage}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             percentage: event.target.value,
                                         })
                                     }
@@ -895,34 +895,34 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                     type="checkbox"
                                     checked={payment.is_additional_charge}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             is_additional_charge:
                                                 event.target.checked,
                                         })
                                     }
                                 />
-                                Additional charge
+                                Biaya tambahan
                             </label>
                         </div>
 
                         <div className="mt-4 grid gap-4 lg:grid-cols-4">
-                            <Field label="Due date">
+                            <Field label="Tanggal jatuh tempo">
                                 <Input
                                     type="date"
                                     value={payment.due_date}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             due_date: event.target.value,
                                         })
                                     }
                                 />
                             </Field>
-                            <Field label="Paid at">
+                            <Field label="Terbayar at">
                                 <Input
                                     type="date"
                                     value={payment.paid_at}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             paid_at: event.target.value,
                                         })
                                     }
@@ -933,7 +933,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                     type="date"
                                     value={payment.billing_period_start}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             billing_period_start:
                                                 event.target.value,
                                         })
@@ -945,7 +945,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                     type="date"
                                     value={payment.billing_period_end}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             billing_period_end:
                                                 event.target.value,
                                         })
@@ -955,22 +955,22 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                         </div>
 
                         <div className="mt-4 grid gap-4 lg:grid-cols-4">
-                            <Field label="Payment method">
+                            <Field label="Metode pembayaran">
                                 <SelectField
                                     value={payment.payment_method}
                                     onChange={(value) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             payment_method: value,
                                         })
                                     }
-                                    options={paymentMethods}
+                                    options={paymentMetodes}
                                 />
                             </Field>
                             <Field label="Reference">
                                 <Input
                                     value={payment.reference_number}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             reference_number:
                                                 event.target.value,
                                         })
@@ -981,7 +981,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                 <Input
                                     value={payment.proof_file}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             proof_file: event.target.value,
                                         })
                                     }
@@ -993,7 +993,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                                     min="0"
                                     value={payment.reminder_days_before}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             reminder_days_before:
                                                 event.target.value,
                                         })
@@ -1003,33 +1003,33 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                         </div>
 
                         <div className="mt-4 grid gap-4 lg:grid-cols-3">
-                            <Field label="Description">
+                            <Field label="Deskripsi">
                                 <textarea
                                     value={payment.description}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             description: event.target.value,
                                         })
                                     }
                                     className="min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                                 />
                             </Field>
-                            <Field label="Admin notes">
+                            <Field label="Notes admin">
                                 <textarea
                                     value={payment.admin_notes}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             admin_notes: event.target.value,
                                         })
                                     }
                                     className="min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                                 />
                             </Field>
-                            <Field label="Client notes">
+                            <Field label="Catatan klien">
                                 <textarea
                                     value={payment.client_notes}
                                     onChange={(event) =>
-                                        updatePayment(index, {
+                                        updatePembayaran(index, {
                                             client_notes: event.target.value,
                                         })
                                     }
@@ -1043,11 +1043,11 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
 
             <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-[#E4E7EC] bg-[#F9FAFB]/95 py-4 backdrop-blur">
                 <Button variant="outline" asChild>
-                    <Link href={projectsIndex()}>Cancel</Link>
+                    <Link href={projectsIndex()}>Batal</Link>
                 </Button>
                 <Button type="submit" disabled={processing}>
                     <Save className="size-4" />
-                    {processing ? 'Saving...' : 'Save project'}
+                    {processing ? 'Menyimpan...' : 'Simpan proyek'}
                 </Button>
             </div>
         </form>

@@ -41,25 +41,25 @@ type Props = {
 
 const notifications = [
     {
-        title: 'Project proposal approved',
-        description: 'Webcare CRM proposal moved to active project.',
-        time: '2 min ago',
+        title: 'Proposal proyek disetujui',
+        description: 'Proposal Webcare CRM dipindahkan ke proyek aktif.',
+        time: '2 menit lalu',
     },
     {
-        title: 'Invoice reminder',
-        description: 'Retainer payment for Acme Studio is due today.',
-        time: '1 hour ago',
+        title: 'Pengingat invoice',
+        description: 'Pembayaran retainer untuk Acme Studio jatuh tempo hari ini.',
+        time: '1 jam lalu',
     },
     {
-        title: 'Monitor recovered',
-        description: 'Company profile site is back online.',
-        time: '3 hours ago',
+        title: 'Monitor pulih',
+        description: 'Situs company profile kembali online.',
+        time: '3 jam lalu',
     },
 ];
 
 const mainNavItems: NavItem[] = [
     {
-        title: 'Dashboard',
+        title: 'Dasbor',
         href: dashboard(),
         icon: LayoutGrid,
     },
@@ -67,12 +67,12 @@ const mainNavItems: NavItem[] = [
 
 const rightNavItems: NavItem[] = [
     {
-        title: 'Repository',
+        title: 'Repositori',
         href: 'https://github.com/laravel/react-starter-kit',
         icon: Folder,
     },
     {
-        title: 'Documentation',
+        title: 'Dokumentasi',
         href: 'https://laravel.com/docs/starter-kits#react',
         icon: BookOpen,
     },
@@ -108,7 +108,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                 className="flex h-full w-64 flex-col items-stretch justify-between bg-sidebar"
                             >
                                 <SheetTitle className="sr-only">
-                                    Navigation menu
+                                    Menu navigasi
                                 </SheetTitle>
                                 <SheetHeader className="flex justify-start text-left">
                                     <AppLogoIcon className="h-6 w-6 fill-current text-black dark:text-white" />
@@ -227,7 +227,7 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                     variant="ghost"
                                     size="icon"
                                     className="relative size-10 rounded-full"
-                                    aria-label="Notifications"
+                                    aria-label="Tidaktifikasi"
                                 >
                                     <Bell className="size-5 opacity-80" />
                                     <span className="absolute top-2 right-2 size-2 rounded-full bg-[#FD853A]" />
@@ -239,10 +239,10 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                             >
                                 <div className="border-b border-[#E4E7EC] px-4 py-3">
                                     <p className="text-sm font-semibold text-[#101828]">
-                                        Notifications
+                                        Tidaktifikasi
                                     </p>
                                     <p className="text-xs text-[#667085]">
-                                        Latest account activity.
+                                        Aktivitas akun terbaru.
                                     </p>
                                 </div>
                                 <div className="max-h-[320px] overflow-y-auto">

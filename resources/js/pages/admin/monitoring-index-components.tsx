@@ -62,7 +62,7 @@ export function NativeSelect({
     );
 }
 
-export function FilterActions({
+export function FilterAksi({
     summary,
     onReset,
 }: {

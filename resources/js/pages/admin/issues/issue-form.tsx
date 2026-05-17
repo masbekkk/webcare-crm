@@ -95,7 +95,7 @@ export default function IssueForm({
     const { data, setData, post, put, processing, errors } =
         useForm<IssueFormData>(formData(issue));
 
-    const filteredProjects = projects.filter(
+    const filteredProject = projects.filter(
         (project) =>
             !data.client_id || String(project.client_id) === data.client_id,
     );
@@ -119,7 +119,7 @@ export default function IssueForm({
         <form onSubmit={submit} className="flex flex-col gap-6">
             <section className="rounded-lg border border-[#E4E7EC] bg-white p-6">
                 <div className="grid gap-5 lg:grid-cols-2">
-                    <Field label="Client" error={error('client_id')}>
+                    <Field label="Klien" error={error('client_id')}>
                         <select
                             value={data.client_id}
                             onChange={(event) =>
@@ -131,7 +131,7 @@ export default function IssueForm({
                             }
                             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
-                            <option value="">Select client</option>
+                            <option value="">Select klien</option>
                             {clients.map((client) => (
                                 <option key={client.id} value={client.id}>
                                     {client.company_name}
@@ -140,7 +140,7 @@ export default function IssueForm({
                         </select>
                     </Field>
 
-                    <Field label="Project" error={error('project_id')}>
+                    <Field label="Proyek" error={error('project_id')}>
                         <select
                             value={data.project_id}
                             onChange={(event) =>
@@ -148,8 +148,8 @@ export default function IssueForm({
                             }
                             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
-                            <option value="">Select project</option>
-                            {filteredProjects.map((project) => (
+                            <option value="">Select proyek</option>
+                            {filteredProject.map((project) => (
                                 <option key={project.id} value={project.id}>
                                     {project.name}
                                 </option>
@@ -157,7 +157,7 @@ export default function IssueForm({
                         </select>
                     </Field>
 
-                    <Field label="Title" error={error('title')}>
+                    <Field label="Judul" error={error('title')}>
                         <Input
                             value={data.title}
                             onChange={(event) =>
@@ -166,7 +166,7 @@ export default function IssueForm({
                         />
                     </Field>
 
-                    <Field label="Assignee" error={error('assigned_to')}>
+                    <Field label="Penanggung jawab" error={error('assigned_to')}>
                         <select
                             value={data.assigned_to}
                             onChange={(event) =>
@@ -174,7 +174,7 @@ export default function IssueForm({
                             }
                             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
-                            <option value="">Unassigned</option>
+                            <option value="">Belum ditugaskan</option>
                             {users.map((user) => (
                                 <option key={user.id} value={user.id}>
                                     {user.name} {user.email && `(${user.email})`}
@@ -185,7 +185,7 @@ export default function IssueForm({
                 </div>
 
                 <div className="mt-5 grid gap-5 lg:grid-cols-4">
-                    <Field label="Priority" error={error('priority')}>
+                    <Field label="Prioritas" error={error('priority')}>
                         <SelectField
                             value={data.priority}
                             options={priorities}
@@ -199,7 +199,7 @@ export default function IssueForm({
                             onChange={(value) => setData('status', value)}
                         />
                     </Field>
-                    <Field label="Due date" error={error('due_date')}>
+                    <Field label="Tanggal jatuh tempo" error={error('due_date')}>
                         <Input
                             type="date"
                             value={data.due_date}
@@ -208,7 +208,7 @@ export default function IssueForm({
                             }
                         />
                     </Field>
-                    <Field label="Resolved at" error={error('resolved_at')}>
+                    <Field label="Diselesaikan pada" error={error('resolved_at')}>
                         <Input
                             type="datetime-local"
                             value={data.resolved_at}
@@ -217,7 +217,7 @@ export default function IssueForm({
                             }
                         />
                     </Field>
-                    <Field label="Closed at" error={error('closed_at')}>
+                    <Field label="Ditutup pada" error={error('closed_at')}>
                         <Input
                             type="datetime-local"
                             value={data.closed_at}
@@ -231,7 +231,7 @@ export default function IssueForm({
 
             <section className="rounded-lg border border-[#E4E7EC] bg-white p-6">
                 <div className="grid gap-5 lg:grid-cols-2">
-                    <Field label="Description" error={error('description')}>
+                    <Field label="Deskripsi" error={error('description')}>
                         <textarea
                             value={data.description}
                             onChange={(event) =>
@@ -241,7 +241,7 @@ export default function IssueForm({
                         />
                     </Field>
                     <Field
-                        label="Resolution notes"
+                        label="Notes penyelesaian"
                         error={error('resolution_notes')}
                     >
                         <textarea
@@ -255,7 +255,7 @@ export default function IssueForm({
                             className="min-h-36 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         />
                     </Field>
-                    <Field label="Internal notes" error={error('internal_notes')}>
+                    <Field label="Notes internal" error={error('internal_notes')}>
                         <textarea
                             value={data.internal_notes}
                             onChange={(event) =>
@@ -269,11 +269,11 @@ export default function IssueForm({
 
             <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-[#E4E7EC] bg-[#F9FAFB]/95 py-4 backdrop-blur">
                 <Button variant="outline" asChild>
-                    <Link href={issuesIndex()}>Cancel</Link>
+                    <Link href={issuesIndex()}>Batal</Link>
                 </Button>
                 <Button type="submit" disabled={processing}>
                     <Save className="size-4" />
-                    {processing ? 'Saving...' : 'Save issue'}
+                    {processing ? 'Menyimpan...' : 'Simpan masalah'}
                 </Button>
             </div>
         </form>

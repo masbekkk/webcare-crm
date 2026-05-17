@@ -29,10 +29,10 @@ export default function MonitorsEdit({
             <div className="p-6">
                 <div className="mb-6">
                     <h1 className="text-2xl font-semibold text-[#101828]">
-                        Edit website monitor
+                        Edit monitor website
                     </h1>
                     <p className="mt-1 text-sm text-[#667085]">
-                        Update target URL, check settings, and current monitor
+                        Tidakrmaldate target URL, check settings, and current monitor
                         state.
                     </p>
                 </div>

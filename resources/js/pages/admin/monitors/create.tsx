@@ -24,11 +24,11 @@ export default function MonitorsCreate({
 }) {
     return (
         <>
-            <Head title="Create website monitor" />
+            <Head title="Buat monitor website" />
             <div className="p-6">
                 <div className="mb-6">
                     <h1 className="text-2xl font-semibold text-[#101828]">
-                        Create website monitor
+                        Buat monitor website
                     </h1>
                     <p className="mt-1 text-sm text-[#667085]">
                         Configure uptime checks, status expectations, and

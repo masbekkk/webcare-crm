@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import {
     cleanQuery,
     Field,
-    FilterActions,
+    FilterAksi,
     formatDuration,
     NativeSelect,
     Pagination,
@@ -62,7 +62,7 @@ function normalize(filters: Filters): Record<keyof Filters, string> {
     };
 }
 
-export default function WebsiteIncidentsIndex({
+export default function WebsiteIncidentIndex({
     incidents,
     filters,
     stats,
@@ -78,7 +78,7 @@ export default function WebsiteIncidentsIndex({
     monitors: Option[];
 }) {
     const [form, setForm] = useState(normalize(filters));
-    const filteredProjects = projects.filter(
+    const filteredProject = projects.filter(
         (project) =>
             !form.client_id || String(project.client_id) === form.client_id,
     );
@@ -111,11 +111,11 @@ export default function WebsiteIncidentsIndex({
 
     return (
         <>
-            <Head title="Website incidents" />
+            <Head title="Incident website" />
             <div className="p-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-[#101828]">
-                        Incidents
+                        Incident
                     </h1>
                     <p className="mt-1 text-sm text-[#667085]">
                         Audit downtime windows, recovery time, and root signals.
@@ -124,11 +124,11 @@ export default function WebsiteIncidentsIndex({
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-3">
                     <Stat
-                        title="Filtered incidents"
+                        title="Incident terfilter"
                         value={`${stats.total_count}`}
                     />
-                    <Stat title="Ongoing" value={`${stats.ongoing_count}`} />
-                    <Stat title="Resolved" value={`${stats.resolved_count}`} />
+                    <Stat title="Berlangsung" value={`${stats.ongoing_count}`} />
+                    <Stat title="Selesai" value={`${stats.resolved_count}`} />
                 </div>
 
                 <form
@@ -136,7 +136,7 @@ export default function WebsiteIncidentsIndex({
                     className="mt-6 rounded-lg border border-[#E4E7EC] bg-white p-5"
                 >
                     <div className="grid gap-4 lg:grid-cols-4">
-                        <Field label="Search">
+                        <Field label="Cari">
                             <Input
                                 value={form.search}
                                 onChange={(event) =>
@@ -144,14 +144,14 @@ export default function WebsiteIncidentsIndex({
                                 }
                             />
                         </Field>
-                        <Field label="Client">
+                        <Field label="Klien">
                             <NativeSelect
                                 value={form.client_id}
                                 onChange={(value) =>
                                     setFilter('client_id', value)
                                 }
                             >
-                                <option value="">All clients</option>
+                                <option value="">All klien</option>
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
                                         {client.company_name}
@@ -159,15 +159,15 @@ export default function WebsiteIncidentsIndex({
                                 ))}
                             </NativeSelect>
                         </Field>
-                        <Field label="Project">
+                        <Field label="Proyek">
                             <NativeSelect
                                 value={form.project_id}
                                 onChange={(value) =>
                                     setFilter('project_id', value)
                                 }
                             >
-                                <option value="">All projects</option>
-                                {filteredProjects.map((project) => (
+                                <option value="">All proyek</option>
+                                {filteredProject.map((project) => (
                                     <option key={project.id} value={project.id}>
                                         {project.name}
                                     </option>
@@ -181,7 +181,7 @@ export default function WebsiteIncidentsIndex({
                                     setFilter('monitor_id', value)
                                 }
                             >
-                                <option value="">All monitors</option>
+                                <option value="">All monitor</option>
                                 {filteredMonitors.map((monitor) => (
                                     <option key={monitor.id} value={monitor.id}>
                                         {monitor.name}
@@ -194,7 +194,7 @@ export default function WebsiteIncidentsIndex({
                                 value={form.status}
                                 onChange={(value) => setFilter('status', value)}
                             >
-                                <option value="">All statuses</option>
+                                <option value="">All status</option>
                                 {statuses.map((status) => (
                                     <option key={status} value={status}>
                                         {status}
@@ -202,7 +202,7 @@ export default function WebsiteIncidentsIndex({
                                 ))}
                             </NativeSelect>
                         </Field>
-                        <Field label="Started from">
+                        <Field label="Mulai dari">
                             <Input
                                 type="date"
                                 value={form.started_from}
@@ -224,7 +224,7 @@ export default function WebsiteIncidentsIndex({
                             />
                         </Field>
                     </div>
-                    <FilterActions
+                    <FilterAksi
                         summary={`${stats.total_count} incidents match current filters.`}
                         onReset={reset}
                     />
@@ -237,9 +237,9 @@ export default function WebsiteIncidentsIndex({
                                 <tr>
                                     <th className="px-5 py-3">Incident</th>
                                     <th className="px-5 py-3">Monitor</th>
-                                    <th className="px-5 py-3">Project</th>
-                                    <th className="px-5 py-3">Window</th>
-                                    <th className="px-5 py-3">Errors</th>
+                                    <th className="px-5 py-3">Proyek</th>
+                                    <th className="px-5 py-3">Rentang</th>
+                                    <th className="px-5 py-3">Error</th>
                                     <th className="px-5 py-3">Status</th>
                                 </tr>
                             </thead>
@@ -277,7 +277,7 @@ export default function WebsiteIncidentsIndex({
                                         <td className="px-5 py-4 text-xs text-[#667085]">
                                             Started: {incident.started_at}
                                             <br />
-                                            Resolved:{' '}
+                                            Selesai:{' '}
                                             {incident.resolved_at ?? '-'}
                                         </td>
                                         <td className="px-5 py-4 text-xs text-[#667085]">
@@ -309,7 +309,7 @@ export default function WebsiteIncidentsIndex({
 
                     {incidents.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No incidents found.
+                            Tidak incidents found.
                         </div>
                     )}
 

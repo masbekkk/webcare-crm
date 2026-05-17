@@ -49,22 +49,22 @@ type SidebarNavEntry = SidebarGroup | SidebarItem;
 const sidebarNavEntries: SidebarNavEntry[] = [
     {
         type: 'item',
-        title: 'Dashboard',
+        title: 'Dasbor',
         href: dashboard(),
         icon: LayoutDashboard,
     },
     {
         type: 'group',
-        title: 'Clients & Users',
-        icon: UsersRound,
+        title: 'Klien & Pengguna',
+        icon: UserRound,
         items: [
             {
-                title: 'Clients',
+                title: 'Klien',
                 href: clientsIndex(),
-                icon: UsersRound,
+                icon: UserRound,
             },
             {
-                title: 'Users',
+                title: 'Pengguna',
                 href: usersIndex(),
                 icon: UserCog,
             },
@@ -72,16 +72,16 @@ const sidebarNavEntries: SidebarNavEntry[] = [
     },
     {
         type: 'group',
-        title: 'Projects',
+        title: 'Proyek',
         icon: BriefcaseBusiness,
         items: [
             {
-                title: 'Projects',
+                title: 'Proyek',
                 href: '/admin/projects',
                 icon: BriefcaseBusiness,
             },
             {
-                title: 'Project Links',
+                title: 'Link Project',
                 href: projectLinksIndex(),
                 icon: Link2,
             },
@@ -89,28 +89,28 @@ const sidebarNavEntries: SidebarNavEntry[] = [
     },
     {
         type: 'item',
-        title: 'Payment Timelines',
+        title: 'Jadwal Pembayaran',
         href: '/admin/payment-timelines',
         icon: CircleDollarSign,
     },
     {
         type: 'group',
-        title: 'Monitoring',
+        title: 'Pemantauan',
         icon: Activity,
         items: [
-            { title: 'Issue List', href: '/admin/issues', icon: Bug },
+            { title: 'Daftar Issue', href: '/admin/issues', icon: Bug },
             {
-                title: 'Website Monitors',
+                title: 'Monitor Website',
                 href: '/admin/monitors',
                 icon: MonitorCheck,
             },
             {
-                title: 'Check Logs',
+                title: 'Log Pemeriksaan',
                 href: '/admin/website-check-logs',
                 icon: Activity,
             },
             {
-                title: 'Incidents',
+                title: 'Incident',
                 href: '/admin/website-incidents',
                 icon: Siren,
             },
@@ -118,26 +118,26 @@ const sidebarNavEntries: SidebarNavEntry[] = [
     },
     {
         type: 'group',
-        title: 'Operations',
+        title: 'Operasional',
         icon: Wrench,
         items: [
             {
-                title: 'Maintenance Logs',
+                title: 'Log Pemeliharaan',
                 href: '/admin/maintenance-logs',
                 icon: Wrench,
             },
             {
-                title: 'Domain Assets',
+                title: 'Aset Domain',
                 href: '/admin/domain-assets',
                 icon: Globe2,
             },
             {
-                title: 'Hosting Assets',
+                title: 'Aset Hosting',
                 href: '/admin/hosting-assets',
                 icon: Server,
             },
             {
-                title: 'Notifications',
+                title: 'Tidaktifikasi',
                 href: '/admin/notifications',
                 icon: Bell,
             },
@@ -145,17 +145,17 @@ const sidebarNavEntries: SidebarNavEntry[] = [
     },
     {
         type: 'group',
-        title: 'Settings',
+        title: 'Pengaturan',
         icon: Settings,
         items: [
-            { title: 'Profile', href: '/settings/profile', icon: UserRound },
+            { title: 'Profil', href: '/settings/profile', icon: UserRound },
             {
                 title: 'Security',
                 href: '/settings/security',
                 icon: ShieldCheck,
             },
             {
-                title: 'Appearance',
+                title: 'Tampilan',
                 href: '/settings/appearance',
                 icon: Settings,
             },
@@ -166,8 +166,8 @@ const sidebarNavEntries: SidebarNavEntry[] = [
 export function AppSidebar() {
     const { isCurrentOrParentUrl } = useCurrentUrl();
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-        'Clients & Users': true,
-        Projects: true,
+        'Client & User': true,
+        Project: true,
     });
 
     const toggleGroup = (title: string) => {

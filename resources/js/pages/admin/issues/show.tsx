@@ -61,7 +61,7 @@ export default function IssuesShow({ issue }: { issue: IssueShowPayload }) {
                             href={issuesIndex()}
                             className="text-sm font-semibold text-brand-500"
                         >
-                            Back to issues
+                            Kembali ke masalah
                         </Link>
                         <h1 className="mt-3 text-2xl font-semibold text-[#101828]">
                             {issue.title}
@@ -106,22 +106,22 @@ export default function IssuesShow({ issue }: { issue: IssueShowPayload }) {
                             </p>
                         </Panel>
 
-                        <Panel title="Resolution notes">
+                        <Panel title="Notes penyelesaian">
                             <p className="whitespace-pre-wrap text-sm leading-6 text-[#344054]">
                                 {issue.resolution_notes ?? '-'}
                             </p>
                         </Panel>
 
-                        <Panel title="Internal notes">
+                        <Panel title="Notes internal">
                             <p className="whitespace-pre-wrap text-sm leading-6 text-[#344054]">
                                 {issue.internal_notes ?? '-'}
                             </p>
                         </Panel>
 
-                        <Panel title="Attachments">
+                        <Panel title="Lampiran">
                             {issue.attachments.length === 0 ? (
                                 <p className="text-sm text-[#667085]">
-                                    No attachments.
+                                    Tidak attachments.
                                 </p>
                             ) : (
                                 <div className="divide-y divide-[#E4E7EC]">
@@ -134,7 +134,7 @@ export default function IssuesShow({ issue }: { issue: IssueShowPayload }) {
                                                 {attachment.file_name}
                                             </div>
                                             <div className="mt-1 text-xs text-[#667085]">
-                                                Uploaded by{' '}
+                                                Tidakrmalloaded by{' '}
                                                 {attachment.uploader.name} /{' '}
                                                 {attachment.file_type ?? '-'} /{' '}
                                                 {attachment.file_size ?? 0}{' '}
@@ -149,7 +149,7 @@ export default function IssuesShow({ issue }: { issue: IssueShowPayload }) {
 
                     <Panel title="Issue details">
                         <dl className="grid gap-4 text-sm">
-                            <Detail label="Client" value={issue.client.company_name} />
+                            <Detail label="Klien" value={issue.client.company_name} />
                             <div>
                                 <dt className="text-xs font-medium text-[#667085]">
                                     Project
@@ -164,21 +164,21 @@ export default function IssuesShow({ issue }: { issue: IssueShowPayload }) {
                                 </dd>
                             </div>
                             <Detail
-                                label="Reporter"
+                                label="Pelapor"
                                 value={issue.reporter?.name ?? '-'}
                             />
                             <Detail
-                                label="Assignee"
+                                label="Penanggung jawab"
                                 value={issue.assignee?.name ?? '-'}
                             />
-                            <Detail label="Due date" value={issue.due_date ?? '-'} />
+                            <Detail label="Tanggal jatuh tempo" value={issue.due_date ?? '-'} />
                             <Detail
-                                label="Resolved at"
+                                label="Diselesaikan pada"
                                 value={issue.resolved_at ?? '-'}
                             />
-                            <Detail label="Closed at" value={issue.closed_at ?? '-'} />
+                            <Detail label="Ditutup pada" value={issue.closed_at ?? '-'} />
                             <Detail label="Created" value={issue.created_at} />
-                            <Detail label="Updated" value={issue.updated_at} />
+                            <Detail label="Tidakrmaldated" value={issue.updated_at} />
                         </dl>
                     </Panel>
                 </div>

@@ -39,12 +39,12 @@ export default function HostingAssetsIndex({
 
     return (
         <>
-            <Head title="Hosting assets" />
+            <Head title="Aset hosting" />
             <div className="p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold text-[#101828]">
-                            Hosting assets
+                            Aset hosting
                         </h1>
                         <p className="mt-1 text-sm text-[#667085]">
                             Manage hosting providers, panels, servers, and
@@ -65,12 +65,12 @@ export default function HostingAssetsIndex({
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
                                     <th className="px-5 py-3">Hosting</th>
-                                    <th className="px-5 py-3">Client</th>
-                                    <th className="px-5 py-3">Project</th>
-                                    <th className="px-5 py-3">Access</th>
-                                    <th className="px-5 py-3">Dates</th>
+                                    <th className="px-5 py-3">Klien</th>
+                                    <th className="px-5 py-3">Proyek</th>
+                                    <th className="px-5 py-3">Akses</th>
+                                    <th className="px-5 py-3">Date</th>
                                     <th className="px-5 py-3 text-right">
-                                        Actions
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
@@ -144,7 +144,7 @@ export default function HostingAssetsIndex({
 
                     {hostingAssets.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No hosting assets found.
+                            Tidak hosting assets found.
                         </div>
                     )}
 

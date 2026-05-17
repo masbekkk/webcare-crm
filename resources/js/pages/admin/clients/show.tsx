@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { ArrowLeft, Edit, FolderKanban, Users } from 'lucide-react';
+import { ArrowLeft, Edit, FolderKanban, User } from 'lucide-react';
 import {
     edit,
     index,
@@ -93,7 +93,7 @@ function date(value: string | null): string {
     }).format(new Date(value));
 }
 
-export default function ClientsShow({ client }: { client: ClientPayload }) {
+export default function ClientShow({ client }: { client: ClientPayload }) {
     return (
         <>
             <Head title={client.company_name} />
@@ -110,30 +110,30 @@ export default function ClientsShow({ client }: { client: ClientPayload }) {
                             {client.company_name}
                         </h1>
                         <p className="mt-1 text-sm text-[#667085]">
-                            {client.display_name ?? 'Client profile'} ·{' '}
+                            {client.display_name ?? 'Profil klien'} ·{' '}
                             {client.status}
                         </p>
                     </div>
                     <Button asChild>
                         <Link href={edit(client.id)}>
                             <Edit className="size-4" />
-                            Edit client
+                            Edit klien
                         </Link>
                     </Button>
                 </div>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <Stat title="Users" value={client.users_count} />
-                    <Stat title="Projects" value={client.projects_count} />
+                    <Stat title="User" value={client.users_count} />
+                    <Stat title="Project" value={client.projects_count} />
                     <Stat
-                        title="Active users"
+                        title="User aktif"
                         value={
                             client.users.filter((user) => user.is_active)
                                 .length
                         }
                     />
                     <Stat
-                        title="Live projects"
+                        title="Project live"
                         value={
                             client.projects.filter(
                                 (project) => project.status === 'live',
@@ -148,45 +148,45 @@ export default function ClientsShow({ client }: { client: ClientPayload }) {
                             Client details
                         </h2>
                         <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                            <Detail label="Company" text={client.company_name} />
+                            <Detail label="Perusahaan" text={client.company_name} />
                             <Detail
-                                label="Display name"
+                                label="Name tampilan"
                                 text={client.display_name}
                             />
                             <Detail label="PIC" text={client.pic_name} />
                             <Detail
-                                label="PIC position"
+                                label="Jabatan PIC"
                                 text={client.pic_position}
                             />
-                            <Detail label="PIC email" text={client.pic_email} />
-                            <Detail label="PIC phone" text={client.pic_phone} />
+                            <Detail label="Email PIC" text={client.pic_email} />
+                            <Detail label="Telepon PIC" text={client.pic_phone} />
                             <Detail
                                 label="PIC WhatsApp"
                                 text={client.pic_whatsapp}
                             />
                             <Detail
-                                label="Company email"
+                                label="Email perusahaan"
                                 text={client.company_email}
                             />
                             <Detail
-                                label="Company phone"
+                                label="Telepon perusahaan"
                                 text={client.company_phone}
                             />
-                            <Detail label="City" text={client.city} />
-                            <Detail label="Province" text={client.province} />
+                            <Detail label="Kota" text={client.city} />
+                            <Detail label="Provinsi" text={client.province} />
                             <Detail label="Status" text={client.status} />
                         </div>
                         <div className="mt-4 grid gap-4">
-                            <Detail label="Address" text={client.address} />
-                            <Detail label="Notes" text={client.notes} />
+                            <Detail label="Alamat" text={client.address} />
+                            <Detail label="Catatan" text={client.notes} />
                         </div>
                     </section>
 
                     <section className="rounded-lg border border-[#E4E7EC] bg-white p-5">
                         <div className="flex items-center gap-2">
-                            <Users className="size-5 text-brand-500" />
+                            <User className="size-5 text-brand-500" />
                             <h2 className="text-base font-semibold text-[#101828]">
-                                Users
+                                User
                             </h2>
                         </div>
                         <div className="mt-5 overflow-x-auto">
@@ -194,8 +194,8 @@ export default function ClientsShow({ client }: { client: ClientPayload }) {
                                 <thead className="text-xs font-semibold text-[#667085] uppercase">
                                     <tr>
                                         <th className="py-2 pr-4">User</th>
-                                        <th className="py-2 pr-4">Phone</th>
-                                        <th className="py-2 pr-4">Role</th>
+                                        <th className="py-2 pr-4">Telepon</th>
+                                        <th className="py-2 pr-4">Peran</th>
                                         <th className="py-2 pr-4">Status</th>
                                         <th className="py-2">Last login</th>
                                     </tr>
@@ -239,7 +239,7 @@ export default function ClientsShow({ client }: { client: ClientPayload }) {
                             </table>
                         </div>
                         {client.users.length === 0 && (
-                            <EmptyState text="No users for this client." />
+                            <EmptyState text="Tidak users for this client." />
                         )}
                     </section>
                 </div>
@@ -248,7 +248,7 @@ export default function ClientsShow({ client }: { client: ClientPayload }) {
                     <div className="flex items-center gap-2">
                         <FolderKanban className="size-5 text-brand-500" />
                         <h2 className="text-base font-semibold text-[#101828]">
-                            Projects
+                            Project
                         </h2>
                     </div>
                     <div className="mt-5 grid gap-4 lg:grid-cols-2">
@@ -274,7 +274,7 @@ export default function ClientsShow({ client }: { client: ClientPayload }) {
                                 </div>
 
                                 <p className="mt-3 line-clamp-2 text-sm text-[#667085]">
-                                    {project.description ?? 'No description.'}
+                                    {project.description ?? 'Tidak ada deskripsi.'}
                                 </p>
 
                                 <div className="mt-4 grid gap-3 text-xs text-[#667085] sm:grid-cols-3">
@@ -283,7 +283,7 @@ export default function ClientsShow({ client }: { client: ClientPayload }) {
                                         value={money(project.contract_value)}
                                     />
                                     <Metric
-                                        label="Payments"
+                                        label="Pembayaran"
                                         value={project.payment_timelines_count}
                                     />
                                     <Metric
@@ -322,7 +322,7 @@ export default function ClientsShow({ client }: { client: ClientPayload }) {
                                     </div>
                                     {project.members.length === 0 && (
                                         <p className="mt-3 text-sm text-[#667085]">
-                                            No project users assigned.
+                                            Tidak project users assigned.
                                         </p>
                                     )}
                                 </div>
@@ -330,7 +330,7 @@ export default function ClientsShow({ client }: { client: ClientPayload }) {
                         ))}
                     </div>
                     {client.projects.length === 0 && (
-                        <EmptyState text="No projects for this client." />
+                        <EmptyState text="Tidak projects for this client." />
                     )}
                 </section>
             </div>

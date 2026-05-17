@@ -7,7 +7,7 @@ type ClientOption = {
     company_name: string;
 };
 
-export default function UsersCreate({
+export default function UserCreate({
     user,
     clients,
 }: {
@@ -16,14 +16,14 @@ export default function UsersCreate({
 }) {
     return (
         <>
-            <Head title="Create user" />
+            <Head title="Buat pengguna" />
             <div className="p-6">
                 <div className="mb-6">
                     <h1 className="text-2xl font-semibold text-[#101828]">
-                        Create user
+                        Buat pengguna
                     </h1>
                     <p className="mt-1 text-sm text-[#667085]">
-                        Create an admin or client portal account.
+                        Buat akun admin atau portal klien.
                     </p>
                 </div>
                 <UserForm user={user} clients={clients} />

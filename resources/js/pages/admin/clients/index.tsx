@@ -1,5 +1,5 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { ArrowUpDown, Edit, Eye, Plus, Search, Trash2, X } from 'lucide-react';
+import { ArrowDown, Edit, Eye, Plus, Search, Trash2, X } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useState } from 'react';
 import {
@@ -26,7 +26,7 @@ type ClientRow = {
     projects_count: number;
 };
 
-type PaginatedClients = {
+type PaginatedClient = {
     data: ClientRow[];
     from: number | null;
     links: Array<{ url: string | null; label: string; active: boolean }>;
@@ -45,12 +45,12 @@ type Stats = {
     client_user_count: number;
 };
 
-export default function ClientsIndex({
+export default function ClientIndex({
     clients,
     filters,
     stats,
 }: {
-    clients: PaginatedClients;
+    clients: PaginatedClient;
     filters: Filters;
     stats: Stats;
 }) {
@@ -100,12 +100,12 @@ export default function ClientsIndex({
 
     return (
         <>
-            <Head title="Clients" />
+            <Head title="Client" />
             <div className="p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold text-[#101828]">
-                            Clients
+                            Client
                         </h1>
                         <p className="mt-1 text-sm text-[#667085]">
                             Manage company profiles and portal user accounts.
@@ -120,10 +120,10 @@ export default function ClientsIndex({
                 </div>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <Stat title="Total clients" value={stats.total_count} />
+                    <Stat title="Total klien" value={stats.total_count} />
                     <Stat title="Active" value={stats.active_count} />
-                    <Stat title="Prospects" value={stats.prospect_count} />
-                    <Stat title="Client users" value={stats.client_user_count} />
+                    <Stat title="Prospek" value={stats.prospect_count} />
+                    <Stat title="User klien" value={stats.client_user_count} />
                 </div>
 
                 <form
@@ -133,13 +133,13 @@ export default function ClientsIndex({
                     <Input
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
-                        placeholder="Search clients or PIC..."
+                        placeholder="Cari klien atau PIC..."
                         className="sm:max-w-sm"
                     />
                     <div className="flex gap-2">
                         <Button type="submit">
                             <Search className="size-4" />
-                            Search
+                            Cari
                         </Button>
                         <Button type="button" variant="outline" onClick={reset}>
                             <X className="size-4" />
@@ -153,18 +153,18 @@ export default function ClientsIndex({
                         <table className="w-full min-w-[920px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
-                                    <th className="px-5 py-3">No.</th>
+                                    <th className="px-5 py-3">Tidak.</th>
                                     <SortableHeader href={sortUrl('client')}>
                                         Client
                                     </SortableHeader>
                                     <SortableHeader href={sortUrl('pic')}>
                                         PIC
                                     </SortableHeader>
-                                    <th className="px-5 py-3">Location</th>
+                                    <th className="px-5 py-3">Lokasi</th>
                                     <th className="px-5 py-3">Status</th>
-                                    <th className="px-5 py-3">Relations</th>
+                                    <th className="px-5 py-3">Relasi</th>
                                     <th className="px-5 py-3 text-right">
-                                        Actions
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
@@ -252,7 +252,7 @@ export default function ClientsIndex({
 
                     {clients.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No clients found.
+                            Tidak clients found.
                         </div>
                     )}
 
@@ -310,7 +310,7 @@ function SortableHeader({
         <th className="px-5 py-3">
             <Link href={href} className="inline-flex items-center gap-1">
                 {children}
-                <ArrowUpDown className="size-3.5" />
+                <ArrowDown className="size-3.5" />
             </Link>
         </th>
     );

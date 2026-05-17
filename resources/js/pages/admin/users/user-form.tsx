@@ -122,7 +122,7 @@ export default function UserForm({
                         />
                     </Field>
 
-                    <Field label="Phone" error={error('phone')}>
+                    <Field label="Telepon" error={error('phone')}>
                         <Input
                             value={data.phone}
                             onChange={(event) =>
@@ -131,7 +131,7 @@ export default function UserForm({
                         />
                     </Field>
 
-                    <Field label="Role" error={error('role')}>
+                    <Field label="Peran" error={error('role')}>
                         <select
                             value={data.role}
                             onChange={(event) => {
@@ -153,7 +153,7 @@ export default function UserForm({
                         </select>
                     </Field>
 
-                    <Field label="Client" error={error('client_id')}>
+                    <Field label="Klien" error={error('client_id')}>
                         <select
                             value={data.client_id}
                             disabled={data.role === 'admin'}
@@ -162,7 +162,7 @@ export default function UserForm({
                             }
                             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
                         >
-                            <option value="">No client</option>
+                            <option value="">Tidak client</option>
                             {clients.map((client) => (
                                 <option key={client.id} value={client.id}>
                                     {client.company_name}
@@ -191,7 +191,7 @@ export default function UserForm({
 
                 <div className="mt-5 grid gap-5 lg:grid-cols-2">
                     <Field
-                        label={isEditing ? 'New password' : 'Password'}
+                        label={isEditing ? 'Password baru' : 'Password'}
                         error={error('password')}
                     >
                         <Input
@@ -204,7 +204,7 @@ export default function UserForm({
                     </Field>
 
                     <Field
-                        label="Confirm password"
+                        label="Konfirmasi password"
                         error={error('password_confirmation')}
                     >
                         <Input
@@ -223,11 +223,11 @@ export default function UserForm({
 
             <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-[#E4E7EC] bg-[#F9FAFB]/95 py-4 backdrop-blur">
                 <Button variant="outline" asChild>
-                    <Link href={usersIndex()}>Cancel</Link>
+                    <Link href={usersIndex()}>Batal</Link>
                 </Button>
                 <Button type="submit" disabled={processing}>
                     <Save className="size-4" />
-                    {processing ? 'Saving...' : 'Save user'}
+                    {processing ? 'Menyimpan...' : 'Simpan pengguna'}
                 </Button>
             </div>
         </form>

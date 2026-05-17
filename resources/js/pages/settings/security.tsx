@@ -51,15 +51,15 @@ export default function Security({
 
     return (
         <>
-            <Head title="Security settings" />
+            <Head title="Pengaturan keamanan" />
 
-            <h1 className="sr-only">Security settings</h1>
+            <h1 className="sr-only">Pengaturan keamanan</h1>
 
             <div className="space-y-6">
                 <Heading
                     variant="small"
-                    title="Update password"
-                    description="Ensure your account is using a long, random password to stay secure"
+                    title="Ubah password"
+                    description="Pastikan akun memakai password panjang dan acak agar tetap aman"
                 />
 
                 <Form
@@ -88,7 +88,7 @@ export default function Security({
                         <>
                             <div className="grid gap-2">
                                 <Label htmlFor="current_password">
-                                    Current password
+                                    Password saat ini
                                 </Label>
 
                                 <PasswordInput
@@ -97,14 +97,14 @@ export default function Security({
                                     name="current_password"
                                     className="mt-1 block w-full"
                                     autoComplete="current-password"
-                                    placeholder="Current password"
+                                    placeholder="Password saat ini"
                                 />
 
                                 <InputError message={errors.current_password} />
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="password">New password</Label>
+                                <Label htmlFor="password">Password baru</Label>
 
                                 <PasswordInput
                                     id="password"
@@ -112,7 +112,7 @@ export default function Security({
                                     name="password"
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
-                                    placeholder="New password"
+                                    placeholder="Password baru"
                                 />
 
                                 <InputError message={errors.password} />
@@ -120,7 +120,7 @@ export default function Security({
 
                             <div className="grid gap-2">
                                 <Label htmlFor="password_confirmation">
-                                    Confirm password
+                                    Konfirmasi password
                                 </Label>
 
                                 <PasswordInput
@@ -128,7 +128,7 @@ export default function Security({
                                     name="password_confirmation"
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
-                                    placeholder="Confirm password"
+                                    placeholder="Konfirmasi password"
                                 />
 
                                 <InputError
@@ -141,7 +141,7 @@ export default function Security({
                                     disabled={processing}
                                     data-test="update-password-button"
                                 >
-                                    Save password
+                                    Simpan password
                                 </Button>
                             </div>
                         </>
@@ -153,8 +153,8 @@ export default function Security({
                 <div className="space-y-6">
                     <Heading
                         variant="small"
-                        title="Two-factor authentication"
-                        description="Manage your two-factor authentication settings"
+                        title="Autentikasi dua faktor"
+                        description="Kelola pengaturan autentikasi dua faktor"
                     />
                     {twoFactorEnabled ? (
                         <div className="flex flex-col items-start justify-start space-y-4">
@@ -172,7 +172,7 @@ export default function Security({
                                             type="submit"
                                             disabled={processing}
                                         >
-                                            Disable 2FA
+                                            Tidaknaktifkan 2FA
                                         </Button>
                                     )}
                                 </Form>
@@ -199,7 +199,7 @@ export default function Security({
                                         onClick={() => setShowSetupModal(true)}
                                     >
                                         <ShieldCheck />
-                                        Continue setup
+                                        Lanjutkan setup
                                     </Button>
                                 ) : (
                                     <Form
@@ -213,7 +213,7 @@ export default function Security({
                                                 type="submit"
                                                 disabled={processing}
                                             >
-                                                Enable 2FA
+                                                Activekan 2FA
                                             </Button>
                                         )}
                                     </Form>
@@ -224,7 +224,7 @@ export default function Security({
 
                     <TwoFactorSetupModal
                         isOpen={showSetupModal}
-                        onClose={() => setShowSetupModal(false)}
+                        onTutup={() => setShowSetupModal(false)}
                         requiresConfirmation={requiresConfirmation}
                         twoFactorEnabled={twoFactorEnabled}
                         qrCodeSvg={qrCodeSvg}
@@ -242,7 +242,7 @@ export default function Security({
 Security.layout = {
     breadcrumbs: [
         {
-            title: 'Security settings',
+            title: 'Pengaturan keamanan',
             href: edit(),
         },
     ],

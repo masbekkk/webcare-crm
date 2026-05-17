@@ -14,7 +14,7 @@ import { Input } from '@/components/ui/input';
 import {
     cleanQuery,
     Field,
-    FilterActions,
+    FilterAksi,
     NativeSelect,
     Pagination,
     Stat,
@@ -88,7 +88,7 @@ export default function MonitorsIndex({
     projects: Option[];
 }) {
     const [form, setForm] = useState(normalize(filters));
-    const filteredProjects = projects.filter(
+    const filteredProject = projects.filter(
         (project) =>
             !form.client_id || String(project.client_id) === form.client_id,
     );
@@ -124,12 +124,12 @@ export default function MonitorsIndex({
 
     return (
         <>
-            <Head title="Website monitors" />
+            <Head title="Monitor website" />
             <div className="p-6">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-semibold text-[#101828]">
-                            Website monitors
+                            Monitor website
                         </h1>
                         <p className="mt-1 text-sm text-[#667085]">
                             Watch uptime, response time, and recent monitor
@@ -146,11 +146,11 @@ export default function MonitorsIndex({
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     <Stat
-                        title="Filtered monitors"
+                        title="Monitor terfilter"
                         value={`${stats.total_count}`}
                     />
                     <Stat title="Active" value={`${stats.active_count}`} />
-                    <Stat title="Up" value={`${stats.up_count}`} />
+                    <Stat title="Tidakrmal" value={`${stats.up_count}`} />
                     <Stat title="Down" value={`${stats.down_count}`} />
                 </div>
 
@@ -159,7 +159,7 @@ export default function MonitorsIndex({
                     className="mt-6 rounded-lg border border-[#E4E7EC] bg-white p-5"
                 >
                     <div className="grid gap-4 lg:grid-cols-5">
-                        <Field label="Search">
+                        <Field label="Cari">
                             <Input
                                 value={form.search}
                                 onChange={(event) =>
@@ -167,14 +167,14 @@ export default function MonitorsIndex({
                                 }
                             />
                         </Field>
-                        <Field label="Client">
+                        <Field label="Klien">
                             <NativeSelect
                                 value={form.client_id}
                                 onChange={(value) =>
                                     setFilter('client_id', value)
                                 }
                             >
-                                <option value="">All clients</option>
+                                <option value="">All klien</option>
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
                                         {client.company_name}
@@ -182,15 +182,15 @@ export default function MonitorsIndex({
                                 ))}
                             </NativeSelect>
                         </Field>
-                        <Field label="Project">
+                        <Field label="Proyek">
                             <NativeSelect
                                 value={form.project_id}
                                 onChange={(value) =>
                                     setFilter('project_id', value)
                                 }
                             >
-                                <option value="">All projects</option>
-                                {filteredProjects.map((project) => (
+                                <option value="">All proyek</option>
+                                {filteredProject.map((project) => (
                                     <option key={project.id} value={project.id}>
                                         {project.name}
                                     </option>
@@ -202,7 +202,7 @@ export default function MonitorsIndex({
                                 value={form.status}
                                 onChange={(value) => setFilter('status', value)}
                             >
-                                <option value="">All statuses</option>
+                                <option value="">All status</option>
                                 {statuses.map((status) => (
                                     <option key={status} value={status}>
                                         {status}
@@ -217,13 +217,13 @@ export default function MonitorsIndex({
                                     setFilter('is_active', value)
                                 }
                             >
-                                <option value="">All</option>
+                                <option value="">Semua</option>
                                 <option value="1">Active</option>
-                                <option value="0">Inactive</option>
+                                <option value="0">Tidak aktif</option>
                             </NativeSelect>
                         </Field>
                     </div>
-                    <FilterActions
+                    <FilterAksi
                         summary={`${stats.total_count} monitors match current filters.`}
                         onReset={reset}
                     />
@@ -235,13 +235,13 @@ export default function MonitorsIndex({
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
                                     <th className="px-5 py-3">Monitor</th>
-                                    <th className="px-5 py-3">Project</th>
-                                    <th className="px-5 py-3">Check</th>
-                                    <th className="px-5 py-3">Last result</th>
+                                    <th className="px-5 py-3">Proyek</th>
+                                    <th className="px-5 py-3">Pemeriksaan</th>
+                                    <th className="px-5 py-3">Hasil terakhir</th>
                                     <th className="px-5 py-3">Streak</th>
                                     <th className="px-5 py-3">Status</th>
                                     <th className="px-5 py-3 text-right">
-                                        Actions
+                                        Aksi
                                     </th>
                                 </tr>
                             </thead>
@@ -313,7 +313,7 @@ export default function MonitorsIndex({
                                             <div className="mt-2 text-xs text-[#667085]">
                                                 {monitor.is_active
                                                     ? 'Active'
-                                                    : 'Inactive'}
+                                                    : 'Tidak aktif'}
                                             </div>
                                         </td>
                                         <td className="px-5 py-4">
@@ -364,7 +364,7 @@ export default function MonitorsIndex({
 
                     {monitors.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No monitors found.
+                            Tidak monitors found.
                         </div>
                     )}
 

@@ -72,7 +72,7 @@ export default function DomainAssetForm({
     const isEditing = domainAsset !== null;
     const { data, setData, post, put, processing, errors } =
         useForm<DomainAssetFormData>(formData(domainAsset));
-    const filteredProjects = projects.filter(
+    const filteredProject = projects.filter(
         (project) =>
             !data.client_id || String(project.client_id) === data.client_id,
     );
@@ -95,7 +95,7 @@ export default function DomainAssetForm({
         <form onSubmit={submit} className="flex flex-col gap-6">
             <section className="rounded-lg border border-[#E4E7EC] bg-white p-6">
                 <div className="grid gap-5 lg:grid-cols-3">
-                    <Field label="Client" error={error('client_id')}>
+                    <Field label="Klien" error={error('client_id')}>
                         <select
                             value={data.client_id}
                             onChange={(event) => {
@@ -107,7 +107,7 @@ export default function DomainAssetForm({
                             }}
                             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
-                            <option value="">Select client</option>
+                            <option value="">Select klien</option>
                             {clients.map((client) => (
                                 <option key={client.id} value={client.id}>
                                     {client.company_name}
@@ -115,7 +115,7 @@ export default function DomainAssetForm({
                             ))}
                         </select>
                     </Field>
-                    <Field label="Project" error={error('project_id')}>
+                    <Field label="Proyek" error={error('project_id')}>
                         <select
                             value={data.project_id}
                             onChange={(event) =>
@@ -123,15 +123,15 @@ export default function DomainAssetForm({
                             }
                             className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
-                            <option value="">No project</option>
-                            {filteredProjects.map((project) => (
+                            <option value="">Tidak project</option>
+                            {filteredProject.map((project) => (
                                 <option key={project.id} value={project.id}>
                                     {project.name}
                                 </option>
                             ))}
                         </select>
                     </Field>
-                    <Field label="Domain name" error={error('domain_name')}>
+                    <Field label="Name domain" error={error('domain_name')}>
                         <Input
                             value={data.domain_name}
                             onChange={(event) =>
@@ -147,7 +147,7 @@ export default function DomainAssetForm({
                             }
                         />
                     </Field>
-                    <Field label="Registered at" error={error('registered_at')}>
+                    <Field label="Terdaftar pada" error={error('registered_at')}>
                         <Input
                             type="date"
                             value={data.registered_at}
@@ -156,7 +156,7 @@ export default function DomainAssetForm({
                             }
                         />
                     </Field>
-                    <Field label="Expired at" error={error('expired_at')}>
+                    <Field label="Berakhir pada" error={error('expired_at')}>
                         <Input
                             type="date"
                             value={data.expired_at}
@@ -167,7 +167,7 @@ export default function DomainAssetForm({
                     </Field>
                 </div>
                 <div className="mt-5 grid gap-5 lg:grid-cols-2">
-                    <Field label="Notes" error={error('notes')}>
+                    <Field label="Catatan" error={error('notes')}>
                         <textarea
                             value={data.notes}
                             onChange={(event) =>
@@ -184,18 +184,18 @@ export default function DomainAssetForm({
                                 setData('auto_renew', event.target.checked)
                             }
                         />
-                        Auto renew
+                        Otomatis renew
                     </label>
                 </div>
             </section>
 
             <div className="sticky bottom-0 z-10 flex items-center justify-end gap-3 border-t border-[#E4E7EC] bg-[#F9FAFB]/95 py-4 backdrop-blur">
                 <Button variant="outline" asChild>
-                    <Link href={domainAssetsIndex()}>Cancel</Link>
+                    <Link href={domainAssetsIndex()}>Batal</Link>
                 </Button>
                 <Button type="submit" disabled={processing}>
                     <Save className="size-4" />
-                    {processing ? 'Saving...' : 'Save domain'}
+                    {processing ? 'Menyimpan...' : 'Simpan domain'}
                 </Button>
             </div>
         </form>

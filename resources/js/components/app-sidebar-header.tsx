@@ -12,19 +12,19 @@ import { dashboard } from '@/routes';
 
 const notifications = [
     {
-        title: 'Project proposal approved',
-        description: 'Webcare CRM proposal moved to active project.',
-        time: '2 min ago',
+        title: 'Proposal proyek disetujui',
+        description: 'Proposal Webcare CRM dipindahkan ke proyek aktif.',
+        time: '2 menit lalu',
     },
     {
-        title: 'Invoice reminder',
-        description: 'Retainer payment for Acme Studio is due today.',
-        time: '1 hour ago',
+        title: 'Pengingat invoice',
+        description: 'Pembayaran retainer untuk Acme Studio jatuh tempo hari ini.',
+        time: '1 jam lalu',
     },
     {
-        title: 'Monitor recovered',
-        description: 'Company profile site is back online.',
-        time: '3 hours ago',
+        title: 'Monitor pulih',
+        description: 'Situs company profile kembali online.',
+        time: '3 jam lalu',
     },
 ];
 
@@ -40,7 +40,7 @@ export function AppSidebarHeader() {
                     href={dashboard()}
                     prefetch
                     className="flex size-11 items-center justify-center rounded-[10px] border border-[#E4E7EC] text-[#667085] hover:bg-[#F9FAFB] lg:hidden"
-                    aria-label="Open menu"
+                    aria-label="Buka menu"
                 >
                     <Menu className="size-5" strokeWidth={1.8} />
                 </Link>
@@ -52,7 +52,7 @@ export function AppSidebarHeader() {
                         <button
                             type="button"
                             className="relative flex size-11 items-center justify-center rounded-full border border-[#E4E7EC] text-[#667085] hover:bg-[#F9FAFB]"
-                            aria-label="Notifications"
+                            aria-label="Tidaktifikasi"
                         >
                             <Bell className="size-5" strokeWidth={1.8} />
                             <span className="absolute top-2 right-2 size-2 rounded-full bg-[#FD853A]" />
@@ -61,10 +61,10 @@ export function AppSidebarHeader() {
                     <DropdownMenuContent className="w-[320px] p-0" align="end">
                         <div className="border-b border-[#E4E7EC] px-4 py-3">
                             <p className="text-sm font-semibold text-[#101828]">
-                                Notifications
+                                Tidaktifikasi
                             </p>
                             <p className="text-xs text-[#667085]">
-                                Latest account activity.
+                                Aktivitas akun terbaru.
                             </p>
                         </div>
                         <div className="max-h-[320px] overflow-y-auto">

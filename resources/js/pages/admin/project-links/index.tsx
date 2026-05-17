@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import {
     cleanQuery,
     Field,
-    FilterActions,
+    FilterAksi,
     Pagination,
     Stat,
     type PaginationLink,
@@ -96,11 +96,11 @@ export default function ProjectLinksIndex({
 
     return (
         <>
-            <Head title="Project links" />
+            <Head title="Tautan proyek" />
             <div className="p-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-[#101828]">
-                        Project links
+                        Tautan proyek
                     </h1>
                     <p className="mt-1 text-sm text-[#667085]">
                         View production, staging, repository, documentation, and
@@ -110,12 +110,12 @@ export default function ProjectLinksIndex({
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
                     <Stat
-                        title="Filtered links"
+                        title="Link terfilter"
                         value={`${stats.total_count}`}
                     />
                     <Stat title="Active" value={`${stats.active_count}`} />
-                    <Stat title="Primary" value={`${stats.primary_count}`} />
-                    <Stat title="Inactive" value={`${stats.inactive_count}`} />
+                    <Stat title="Utama" value={`${stats.primary_count}`} />
+                    <Stat title="Tidak aktif" value={`${stats.inactive_count}`} />
                 </div>
 
                 <form
@@ -123,7 +123,7 @@ export default function ProjectLinksIndex({
                     className="mt-6 rounded-lg border border-[#E4E7EC] bg-white p-5"
                 >
                     <div className="grid gap-4 lg:grid-cols-3">
-                        <Field label="Search">
+                        <Field label="Cari">
                             <Input
                                 value={form.search}
                                 onChange={(event) =>
@@ -135,7 +135,7 @@ export default function ProjectLinksIndex({
                             />
                         </Field>
                     </div>
-                    <FilterActions
+                    <FilterAksi
                         summary={`${stats.total_count} project links match current filters.`}
                         onReset={reset}
                     />
@@ -146,7 +146,7 @@ export default function ProjectLinksIndex({
                         <table className="w-full min-w-[1000px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
-                                    <th className="w-20 px-5 py-3">No</th>
+                                    <th className="w-20 px-5 py-3">Tidak</th>
                                     <th className="px-5 py-3">Link</th>
                                     <th className="px-5 py-3">
                                         <SortButton
@@ -166,7 +166,7 @@ export default function ProjectLinksIndex({
                                             Client
                                         </SortButton>
                                     </th>
-                                    <th className="px-5 py-3">Access</th>
+                                    <th className="px-5 py-3">Akses</th>
                                     <th className="px-5 py-3">Status</th>
                                     <th className="px-5 py-3 text-right">
                                         Action
@@ -212,7 +212,7 @@ export default function ProjectLinksIndex({
                                             }
                                         </td>
                                         <td className="px-5 py-4 text-xs text-[#667085]">
-                                            Type: {projectLink.type}
+                                            Tipe: {projectLink.type}
                                             <br />
                                             Username:{' '}
                                             {projectLink.username ?? '-'}
@@ -220,12 +220,12 @@ export default function ProjectLinksIndex({
                                         <td className="px-5 py-4">
                                             <div className="flex flex-wrap gap-2">
                                                 {projectLink.is_primary && (
-                                                    <Badge>Primary</Badge>
+                                                    <Badge>Utama</Badge>
                                                 )}
                                                 <Badge>
                                                     {projectLink.is_active
                                                         ? 'Active'
-                                                        : 'Inactive'}
+                                                        : 'Tidak aktif'}
                                                 </Badge>
                                             </div>
                                         </td>
@@ -242,7 +242,7 @@ export default function ProjectLinksIndex({
                                                         rel="noreferrer"
                                                     >
                                                         <ExternalLink className="size-4" />
-                                                        Open
+                                                        Terbuka
                                                     </a>
                                                 </Button>
                                             </div>
@@ -255,7 +255,7 @@ export default function ProjectLinksIndex({
 
                     {projectLinks.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No project links found.
+                            Tidak project links found.
                         </div>
                     )}
 

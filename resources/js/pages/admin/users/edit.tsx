@@ -7,7 +7,7 @@ type ClientOption = {
     company_name: string;
 };
 
-export default function UsersEdit({
+export default function UserEdit({
     user,
     clients,
 }: {
@@ -20,10 +20,10 @@ export default function UsersEdit({
             <div className="p-6">
                 <div className="mb-6">
                     <h1 className="text-2xl font-semibold text-[#101828]">
-                        Edit user
+                        Edit pengguna
                     </h1>
                     <p className="mt-1 text-sm text-[#667085]">
-                        Update account access, client link, and login status.
+                        Tidakrmaldate account access, client link, and login status.
                     </p>
                 </div>
                 <UserForm user={user} clients={clients} />

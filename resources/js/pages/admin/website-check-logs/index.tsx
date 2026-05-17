@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import {
     cleanQuery,
     Field,
-    FilterActions,
+    FilterAksi,
     NativeSelect,
     Pagination,
     Stat,
@@ -79,7 +79,7 @@ export default function WebsiteCheckLogsIndex({
     monitors: Option[];
 }) {
     const [form, setForm] = useState(normalize(filters));
-    const filteredProjects = projects.filter(
+    const filteredProject = projects.filter(
         (project) =>
             !form.client_id || String(project.client_id) === form.client_id,
     );
@@ -112,7 +112,7 @@ export default function WebsiteCheckLogsIndex({
 
     return (
         <>
-            <Head title="Website check logs" />
+            <Head title="Log pemeriksaan website" />
             <div className="p-6">
                 <div>
                     <h1 className="text-2xl font-semibold text-[#101828]">
@@ -125,11 +125,11 @@ export default function WebsiteCheckLogsIndex({
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-3">
                     <Stat
-                        title="Filtered logs"
+                        title="Log terfilter"
                         value={`${stats.total_count}`}
                     />
-                    <Stat title="Successful" value={`${stats.success_count}`} />
-                    <Stat title="Failed" value={`${stats.failure_count}`} />
+                    <Stat title="Berhasil" value={`${stats.success_count}`} />
+                    <Stat title="Gagal" value={`${stats.failure_count}`} />
                 </div>
 
                 <form
@@ -137,7 +137,7 @@ export default function WebsiteCheckLogsIndex({
                     className="mt-6 rounded-lg border border-[#E4E7EC] bg-white p-5"
                 >
                     <div className="grid gap-4 lg:grid-cols-4">
-                        <Field label="Search">
+                        <Field label="Cari">
                             <Input
                                 value={form.search}
                                 onChange={(event) =>
@@ -145,14 +145,14 @@ export default function WebsiteCheckLogsIndex({
                                 }
                             />
                         </Field>
-                        <Field label="Client">
+                        <Field label="Klien">
                             <NativeSelect
                                 value={form.client_id}
                                 onChange={(value) =>
                                     setFilter('client_id', value)
                                 }
                             >
-                                <option value="">All clients</option>
+                                <option value="">All klien</option>
                                 {clients.map((client) => (
                                     <option key={client.id} value={client.id}>
                                         {client.company_name}
@@ -160,15 +160,15 @@ export default function WebsiteCheckLogsIndex({
                                 ))}
                             </NativeSelect>
                         </Field>
-                        <Field label="Project">
+                        <Field label="Proyek">
                             <NativeSelect
                                 value={form.project_id}
                                 onChange={(value) =>
                                     setFilter('project_id', value)
                                 }
                             >
-                                <option value="">All projects</option>
-                                {filteredProjects.map((project) => (
+                                <option value="">All proyek</option>
+                                {filteredProject.map((project) => (
                                     <option key={project.id} value={project.id}>
                                         {project.name}
                                     </option>
@@ -182,7 +182,7 @@ export default function WebsiteCheckLogsIndex({
                                     setFilter('monitor_id', value)
                                 }
                             >
-                                <option value="">All monitors</option>
+                                <option value="">All monitor</option>
                                 {filteredMonitors.map((monitor) => (
                                     <option key={monitor.id} value={monitor.id}>
                                         {monitor.name}
@@ -195,7 +195,7 @@ export default function WebsiteCheckLogsIndex({
                                 value={form.status}
                                 onChange={(value) => setFilter('status', value)}
                             >
-                                <option value="">All statuses</option>
+                                <option value="">All status</option>
                                 {statuses.map((status) => (
                                     <option key={status} value={status}>
                                         {status}
@@ -203,16 +203,16 @@ export default function WebsiteCheckLogsIndex({
                                 ))}
                             </NativeSelect>
                         </Field>
-                        <Field label="Result">
+                        <Field label="Hasil">
                             <NativeSelect
                                 value={form.is_success}
                                 onChange={(value) =>
                                     setFilter('is_success', value)
                                 }
                             >
-                                <option value="">All</option>
+                                <option value="">Semua</option>
                                 <option value="1">Success</option>
-                                <option value="0">Failed</option>
+                                <option value="0">Gagal</option>
                             </NativeSelect>
                         </Field>
                         <Field label="Checked from">
@@ -237,7 +237,7 @@ export default function WebsiteCheckLogsIndex({
                             />
                         </Field>
                     </div>
-                    <FilterActions
+                    <FilterAksi
                         summary={`${stats.total_count} logs match current filters.`}
                         onReset={reset}
                     />
@@ -248,12 +248,12 @@ export default function WebsiteCheckLogsIndex({
                         <table className="w-full min-w-[1050px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
-                                    <th className="px-5 py-3">Checked</th>
+                                    <th className="px-5 py-3">Diperiksa</th>
                                     <th className="px-5 py-3">Monitor</th>
-                                    <th className="px-5 py-3">Project</th>
+                                    <th className="px-5 py-3">Proyek</th>
                                     <th className="px-5 py-3">Response</th>
                                     <th className="px-5 py-3">Error</th>
-                                    <th className="px-5 py-3">Result</th>
+                                    <th className="px-5 py-3">Hasil</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E4E7EC]">
@@ -305,7 +305,7 @@ export default function WebsiteCheckLogsIndex({
 
                     {checkLogs.data.length === 0 && (
                         <div className="px-5 py-12 text-center text-sm text-[#667085]">
-                            No check logs found.
+                            Tidak check logs found.
                         </div>
                     )}
 
