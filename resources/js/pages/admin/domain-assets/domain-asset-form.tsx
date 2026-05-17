@@ -49,11 +49,15 @@ function formData(
         project_id: domainAsset?.project_id?.toString() ?? '',
         domain_name: domainAsset?.domain_name ?? '',
         registrar: domainAsset?.registrar ?? '',
-        registered_at: domainAsset?.registered_at ?? '',
-        expired_at: domainAsset?.expired_at ?? '',
+        registered_at: dateInputValue(domainAsset?.registered_at),
+        expired_at: dateInputValue(domainAsset?.expired_at),
         auto_renew: Boolean(domainAsset?.auto_renew),
         notes: domainAsset?.notes ?? '',
     };
+}
+
+function dateInputValue(value?: string | null): string {
+    return value ? value.slice(0, 10) : '';
 }
 
 export default function DomainAssetForm({

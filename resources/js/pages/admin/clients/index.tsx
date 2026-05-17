@@ -1,11 +1,16 @@
 import { Head, Link, router } from '@inertiajs/react';
-import { Edit, Plus, Trash2 } from 'lucide-react';
+import { ArrowUpDown, Edit, Eye, Plus, Search, Trash2, X } from 'lucide-react';
+import type { FormEvent } from 'react';
+import { useState } from 'react';
 import {
     create,
     destroy,
     edit,
+    index as clientsIndex,
+    show,
 } from '@/actions/App/Http/Controllers/Admin/ClientController';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 
 type ClientRow = {
     id: number;
@@ -23,20 +28,74 @@ type ClientRow = {
 
 type PaginatedClients = {
     data: ClientRow[];
+    from: number | null;
     links: Array<{ url: string | null; label: string; active: boolean }>;
+};
+
+type Filters = {
+    search: string;
+    sort: string;
+    direction: string;
+};
+
+type Stats = {
+    total_count: number;
+    active_count: number;
+    prospect_count: number;
+    client_user_count: number;
 };
 
 export default function ClientsIndex({
     clients,
+    filters,
+    stats,
 }: {
     clients: PaginatedClients;
+    filters: Filters;
+    stats: Stats;
 }) {
+    const [search, setSearch] = useState(filters.search);
+
     const deleteClient = (client: ClientRow) => {
         if (!window.confirm(`Delete client "${client.company_name}"?`)) {
             return;
         }
 
         router.delete(destroy.url(client.id), { preserveScroll: true });
+    };
+
+    const submit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        router.get(
+            clientsIndex.url({
+                query: {
+                    search,
+                    sort: filters.sort,
+                    direction: filters.direction,
+                },
+            }),
+            {},
+            { preserveScroll: true },
+        );
+    };
+
+    const reset = () => {
+        router.get(clientsIndex.url(), {}, { preserveScroll: true });
+    };
+
+    const sortUrl = (sort: 'client' | 'pic') => {
+        const direction =
+            filters.sort === sort && filters.direction === 'asc'
+                ? 'desc'
+                : 'asc';
+
+        return clientsIndex.url({
+            query: {
+                search: filters.search,
+                sort,
+                direction,
+            },
+        });
     };
 
     return (
@@ -60,13 +119,47 @@ export default function ClientsIndex({
                     </Button>
                 </div>
 
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    <Stat title="Total clients" value={stats.total_count} />
+                    <Stat title="Active" value={stats.active_count} />
+                    <Stat title="Prospects" value={stats.prospect_count} />
+                    <Stat title="Client users" value={stats.client_user_count} />
+                </div>
+
+                <form
+                    onSubmit={submit}
+                    className="mt-6 flex flex-col gap-3 rounded-lg border border-[#E4E7EC] bg-white p-4 sm:flex-row"
+                >
+                    <Input
+                        value={search}
+                        onChange={(event) => setSearch(event.target.value)}
+                        placeholder="Search clients or PIC..."
+                        className="sm:max-w-sm"
+                    />
+                    <div className="flex gap-2">
+                        <Button type="submit">
+                            <Search className="size-4" />
+                            Search
+                        </Button>
+                        <Button type="button" variant="outline" onClick={reset}>
+                            <X className="size-4" />
+                            Reset
+                        </Button>
+                    </div>
+                </form>
+
                 <div className="mt-6 overflow-hidden rounded-lg border border-[#E4E7EC] bg-white">
                     <div className="overflow-x-auto">
                         <table className="w-full min-w-[920px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
-                                    <th className="px-5 py-3">Client</th>
-                                    <th className="px-5 py-3">PIC</th>
+                                    <th className="px-5 py-3">No.</th>
+                                    <SortableHeader href={sortUrl('client')}>
+                                        Client
+                                    </SortableHeader>
+                                    <SortableHeader href={sortUrl('pic')}>
+                                        PIC
+                                    </SortableHeader>
                                     <th className="px-5 py-3">Location</th>
                                     <th className="px-5 py-3">Status</th>
                                     <th className="px-5 py-3">Relations</th>
@@ -76,8 +169,11 @@ export default function ClientsIndex({
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E4E7EC]">
-                                {clients.data.map((client) => (
+                                {clients.data.map((client, index) => (
                                     <tr key={client.id}>
+                                        <td className="px-5 py-4 text-[#667085]">
+                                            {(clients.from ?? 1) + index}
+                                        </td>
                                         <td className="px-5 py-4">
                                             <div className="font-semibold text-[#101828]">
                                                 {client.company_name}
@@ -115,7 +211,21 @@ export default function ClientsIndex({
                                                     size="sm"
                                                     asChild
                                                 >
-                                                    <Link href={edit(client.id)}>
+                                                    <Link
+                                                        href={show(client.id)}
+                                                    >
+                                                        <Eye className="size-4" />
+                                                        View
+                                                    </Link>
+                                                </Button>
+                                                <Button
+                                                    variant="outline"
+                                                    size="sm"
+                                                    asChild
+                                                >
+                                                    <Link
+                                                        href={edit(client.id)}
+                                                    >
                                                         <Edit className="size-4" />
                                                         Edit
                                                     </Link>
@@ -175,5 +285,33 @@ export default function ClientsIndex({
                 </div>
             </div>
         </>
+    );
+}
+
+function Stat({ title, value }: { title: string; value: number }) {
+    return (
+        <div className="rounded-lg border border-[#E4E7EC] bg-white p-4">
+            <p className="text-xs font-medium text-[#667085]">{title}</p>
+            <p className="mt-2 text-xl font-semibold text-[#101828]">
+                {value}
+            </p>
+        </div>
+    );
+}
+
+function SortableHeader({
+    href,
+    children,
+}: {
+    href: string;
+    children: React.ReactNode;
+}) {
+    return (
+        <th className="px-5 py-3">
+            <Link href={href} className="inline-flex items-center gap-1">
+                {children}
+                <ArrowUpDown className="size-3.5" />
+            </Link>
+        </th>
     );
 }

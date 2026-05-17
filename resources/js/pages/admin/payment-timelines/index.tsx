@@ -1,10 +1,24 @@
-import { Head, Link, router } from '@inertiajs/react';
-import { Search, X } from 'lucide-react';
-import type { FormEvent } from 'react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { ArrowUpDown, Plus, Search, X } from 'lucide-react';
+import type { FormEvent, ReactNode } from 'react';
 import { useState } from 'react';
-import { index as paymentTimelinesIndex } from '@/actions/App/Http/Controllers/Admin/PaymentTimelineController';
+import {
+    index as paymentTimelinesIndex,
+    store,
+} from '@/actions/App/Http/Controllers/Admin/PaymentTimelineController';
 import { edit as editProject } from '@/actions/App/Http/Controllers/Admin/ProjectController';
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { QueryParams } from '@/wayfinder';
@@ -30,7 +44,12 @@ type Filters = {
     billing_from: string | null;
     billing_to: string | null;
     is_additional_charge: string | null;
+    sort: SortKey | null;
+    direction: SortDirection | null;
 };
+
+type SortKey = 'client' | 'due_date' | 'planned_amount';
+type SortDirection = 'asc' | 'desc';
 
 type PaymentTimelineRow = {
     id: number;
@@ -52,6 +71,7 @@ type PaymentTimelineRow = {
 
 type PaginatedPaymentTimelines = {
     data: PaymentTimelineRow[];
+    from: number | null;
     links: Array<{ url: string | null; label: string; active: boolean }>;
 };
 
@@ -62,6 +82,29 @@ type Stats = {
     total_remaining_amount: string;
     paid_count: number;
     overdue_count: number;
+};
+
+type PaymentTimelineFormData = {
+    client_id: string;
+    project_id: string;
+    type: string;
+    title: string;
+    description: string;
+    sequence_order: string;
+    percentage: string;
+    planned_amount: string;
+    paid_amount: string;
+    due_date: string;
+    paid_at: string;
+    billing_period_start: string;
+    billing_period_end: string;
+    status: string;
+    payment_method: string;
+    reference_number: string;
+    reminder_days_before: string;
+    is_additional_charge: boolean;
+    admin_notes: string;
+    client_notes: string;
 };
 
 const types = [
@@ -95,6 +138,31 @@ const paymentMethods = [
     'other',
 ];
 
+function emptyPaymentTimeline(): PaymentTimelineFormData {
+    return {
+        client_id: '',
+        project_id: '',
+        type: 'dp',
+        title: '',
+        description: '',
+        sequence_order: '1',
+        percentage: '',
+        planned_amount: '0',
+        paid_amount: '0',
+        due_date: '',
+        paid_at: '',
+        billing_period_start: '',
+        billing_period_end: '',
+        status: 'planned',
+        payment_method: '',
+        reference_number: '',
+        reminder_days_before: '',
+        is_additional_charge: false,
+        admin_notes: '',
+        client_notes: '',
+    };
+}
+
 function normalize(filters: Filters): Record<keyof Filters, string> {
     return {
         search: filters.search ?? '',
@@ -110,6 +178,8 @@ function normalize(filters: Filters): Record<keyof Filters, string> {
         billing_from: filters.billing_from ?? '',
         billing_to: filters.billing_to ?? '',
         is_additional_charge: filters.is_additional_charge ?? '',
+        sort: filters.sort ?? 'due_date',
+        direction: filters.direction ?? 'desc',
     };
 }
 
@@ -125,6 +195,24 @@ function money(value: string): string {
         currency: 'IDR',
         maximumFractionDigits: 0,
     }).format(Number(value));
+}
+
+function date(value: string | null): string {
+    if (!value) {
+        return '-';
+    }
+
+    const parsed = new Date(value);
+
+    if (Number.isNaN(parsed.getTime())) {
+        return value;
+    }
+
+    return new Intl.DateTimeFormat('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    }).format(parsed);
 }
 
 export default function PaymentTimelinesIndex({
@@ -169,18 +257,40 @@ export default function PaymentTimelinesIndex({
         router.get(paymentTimelinesIndex.url(), {}, { preserveScroll: true });
     };
 
+    const sortBy = (sort: SortKey) => {
+        const direction =
+            form.sort === sort && form.direction === 'asc' ? 'desc' : 'asc';
+        const query = cleanQuery({
+            ...form,
+            sort,
+            direction,
+        });
+
+        router.get(
+            paymentTimelinesIndex.url({ query }),
+            {},
+            { preserveScroll: true },
+        );
+    };
+
     return (
         <>
             <Head title="Payment timelines" />
             <div className="p-6">
-                <div>
-                    <h1 className="text-2xl font-semibold text-[#101828]">
-                        Payment timelines
-                    </h1>
-                    <p className="mt-1 text-sm text-[#667085]">
-                        Monitor all planned, due, overdue, and paid project
-                        payments.
-                    </p>
+                <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-semibold text-[#101828]">
+                            Payment timelines
+                        </h1>
+                        <p className="mt-1 text-sm text-[#667085]">
+                            Monitor all planned, due, overdue, and paid project
+                            payments.
+                        </p>
+                    </div>
+                    <CreatePaymentTimelineModal
+                        clients={clients}
+                        projects={projects}
+                    />
                 </div>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-6">
@@ -405,74 +515,117 @@ export default function PaymentTimelinesIndex({
 
                 <div className="mt-6 overflow-hidden rounded-lg border border-[#E4E7EC] bg-white">
                     <div className="overflow-x-auto">
-                        <table className="w-full min-w-[1100px] text-left text-sm">
+                        <table className="w-full min-w-[1160px] text-left text-sm">
                             <thead className="bg-[#F9FAFB] text-xs font-semibold text-[#667085] uppercase">
                                 <tr>
+                                    <th className="w-16 px-5 py-3">No</th>
                                     <th className="px-5 py-3">Payment</th>
-                                    <th className="px-5 py-3">Client</th>
-                                    <th className="px-5 py-3">Amounts</th>
-                                    <th className="px-5 py-3">Dates</th>
+                                    <th className="px-5 py-3">
+                                        <SortButton
+                                            label="Client"
+                                            sort="client"
+                                            activeSort={form.sort as SortKey}
+                                            direction={
+                                                form.direction as SortDirection
+                                            }
+                                            onSort={sortBy}
+                                        />
+                                    </th>
+                                    <th className="px-5 py-3">
+                                        <SortButton
+                                            label="Amounts"
+                                            sort="planned_amount"
+                                            activeSort={form.sort as SortKey}
+                                            direction={
+                                                form.direction as SortDirection
+                                            }
+                                            onSort={sortBy}
+                                        />
+                                    </th>
+                                    <th className="px-5 py-3">
+                                        <SortButton
+                                            label="Dates"
+                                            sort="due_date"
+                                            activeSort={form.sort as SortKey}
+                                            direction={
+                                                form.direction as SortDirection
+                                            }
+                                            onSort={sortBy}
+                                        />
+                                    </th>
                                     <th className="px-5 py-3">Status</th>
                                     <th className="px-5 py-3">Method</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[#E4E7EC]">
-                                {paymentTimelines.data.map((timeline) => (
-                                    <tr key={timeline.id}>
-                                        <td className="px-5 py-4">
-                                            <div className="font-semibold text-[#101828]">
-                                                {timeline.title}
-                                            </div>
-                                            <Link
-                                                href={editProject(
-                                                    timeline.project.id,
-                                                )}
-                                                className="text-xs text-brand-500"
-                                            >
-                                                {timeline.project.name}
-                                            </Link>
-                                            <div className="text-xs text-[#667085]">
-                                                {timeline.type}
-                                            </div>
-                                        </td>
-                                        <td className="px-5 py-4 text-[#344054]">
-                                            {timeline.client.company_name}
-                                        </td>
-                                        <td className="px-5 py-4 text-xs text-[#667085]">
-                                            Planned:{' '}
-                                            {money(timeline.planned_amount)}
-                                            <br />
-                                            Paid: {money(timeline.paid_amount)}
-                                            <br />
-                                            Remaining:{' '}
-                                            {money(timeline.remaining_amount)}
-                                        </td>
-                                        <td className="px-5 py-4 text-xs text-[#667085]">
-                                            Due: {timeline.due_date ?? '-'}
-                                            <br />
-                                            Paid: {timeline.paid_at ?? '-'}
-                                            <br />
-                                            Billing:{' '}
-                                            {timeline.billing_period_start ??
-                                                '-'}{' '}
-                                            -{' '}
-                                            {timeline.billing_period_end ?? '-'}
-                                        </td>
-                                        <td className="px-5 py-4">
-                                            <span className="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-500">
-                                                {timeline.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-5 py-4 text-xs text-[#667085]">
-                                            {timeline.payment_method ?? '-'}
-                                            {timeline.is_additional_charge && (
-                                                <div className="mt-1 font-semibold text-[#101828]">
-                                                    Additional
+                                {paymentTimelines.data.map(
+                                    (timeline, index) => (
+                                        <tr key={timeline.id}>
+                                            <td className="px-5 py-4 text-[#667085]">
+                                                {(paymentTimelines.from ?? 1) +
+                                                    index}
+                                            </td>
+                                            <td className="px-5 py-4">
+                                                <div className="font-semibold text-[#101828]">
+                                                    {timeline.title}
                                                 </div>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))}
+                                                <Link
+                                                    href={editProject(
+                                                        timeline.project.id,
+                                                    )}
+                                                    className="text-xs text-brand-500"
+                                                >
+                                                    {timeline.project.name}
+                                                </Link>
+                                                <div className="text-xs text-[#667085]">
+                                                    {timeline.type}
+                                                </div>
+                                            </td>
+                                            <td className="px-5 py-4 text-[#344054]">
+                                                {timeline.client.company_name}
+                                            </td>
+                                            <td className="px-5 py-4 text-xs text-[#667085]">
+                                                Planned:{' '}
+                                                {money(timeline.planned_amount)}
+                                                <br />
+                                                Paid:{' '}
+                                                {money(timeline.paid_amount)}
+                                                <br />
+                                                Remaining:{' '}
+                                                {money(
+                                                    timeline.remaining_amount,
+                                                )}
+                                            </td>
+                                            <td className="px-5 py-4 text-xs text-[#667085]">
+                                                Due: {date(timeline.due_date)}
+                                                <br />
+                                                Paid: {date(timeline.paid_at)}
+                                                <br />
+                                                Billing:{' '}
+                                                {date(
+                                                    timeline.billing_period_start,
+                                                )}{' '}
+                                                -{' '}
+                                                {date(
+                                                    timeline.billing_period_end,
+                                                )}
+                                            </td>
+                                            <td className="px-5 py-4">
+                                                <span className="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-500">
+                                                    {timeline.status}
+                                                </span>
+                                            </td>
+                                            <td className="px-5 py-4 text-xs text-[#667085]">
+                                                {timeline.payment_method ?? '-'}
+                                                {timeline.is_additional_charge && (
+                                                    <div className="mt-1 font-semibold text-[#101828]">
+                                                        Additional
+                                                    </div>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ),
+                                )}
                             </tbody>
                         </table>
                     </div>
@@ -517,15 +670,18 @@ export default function PaymentTimelinesIndex({
 
 function Field({
     label,
+    error,
     children,
 }: {
     label: string;
-    children: React.ReactNode;
+    error?: string;
+    children: ReactNode;
 }) {
     return (
         <div className="flex flex-col gap-2">
             <Label>{label}</Label>
             {children}
+            {error && <InputError message={error} />}
         </div>
     );
 }
@@ -536,5 +692,404 @@ function Stat({ title, value }: { title: string; value: string }) {
             <p className="text-xs font-medium text-[#667085]">{title}</p>
             <p className="mt-2 text-lg font-semibold text-[#101828]">{value}</p>
         </div>
+    );
+}
+
+function SortButton({
+    label,
+    sort,
+    activeSort,
+    direction,
+    onSort,
+}: {
+    label: string;
+    sort: SortKey;
+    activeSort: string;
+    direction: string;
+    onSort: (sort: SortKey) => void;
+}) {
+    const isActive = activeSort === sort;
+
+    return (
+        <button
+            type="button"
+            onClick={() => onSort(sort)}
+            className="inline-flex items-center gap-1 font-semibold text-[#667085] hover:text-[#101828]"
+        >
+            {label}
+            <ArrowUpDown className="size-3.5" />
+            {isActive && (
+                <span className="text-[10px]">
+                    {direction === 'asc' ? 'ASC' : 'DESC'}
+                </span>
+            )}
+        </button>
+    );
+}
+
+function CreatePaymentTimelineModal({
+    clients,
+    projects,
+}: {
+    clients: Option[];
+    projects: Option[];
+}) {
+    const [open, setOpen] = useState(false);
+    const { data, setData, post, processing, errors, reset, clearErrors } =
+        useForm<PaymentTimelineFormData>(emptyPaymentTimeline());
+    const filteredProjects = projects.filter(
+        (project) =>
+            !data.client_id || String(project.client_id) === data.client_id,
+    );
+    const error = (key: keyof PaymentTimelineFormData): string | undefined =>
+        errors[key];
+
+    const submit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+
+        post(store.url(), {
+            preserveScroll: true,
+            onSuccess: () => {
+                reset();
+                clearErrors();
+                setOpen(false);
+            },
+            onError: () => setOpen(true),
+        });
+    };
+
+    const close = () => {
+        reset();
+        clearErrors();
+        setOpen(false);
+    };
+
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                <Button type="button">
+                    <Plus className="size-4" />
+                    Create payment
+                </Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-4xl">
+                <DialogHeader>
+                    <DialogTitle>Create payment timeline</DialogTitle>
+                    <DialogDescription>
+                        Add a planned or paid project payment item.
+                    </DialogDescription>
+                </DialogHeader>
+
+                <form onSubmit={submit} className="space-y-5">
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <Field label="Client" error={error('client_id')}>
+                            <select
+                                value={data.client_id}
+                                onChange={(event) =>
+                                    setData((current) => ({
+                                        ...current,
+                                        client_id: event.target.value,
+                                        project_id: '',
+                                    }))
+                                }
+                                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            >
+                                <option value="">Select client</option>
+                                {clients.map((client) => (
+                                    <option key={client.id} value={client.id}>
+                                        {client.company_name}
+                                    </option>
+                                ))}
+                            </select>
+                        </Field>
+
+                        <Field label="Project" error={error('project_id')}>
+                            <select
+                                value={data.project_id}
+                                onChange={(event) =>
+                                    setData('project_id', event.target.value)
+                                }
+                                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            >
+                                <option value="">Select project</option>
+                                {filteredProjects.map((project) => (
+                                    <option key={project.id} value={project.id}>
+                                        {project.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </Field>
+
+                        <Field label="Title" error={error('title')}>
+                            <Input
+                                value={data.title}
+                                onChange={(event) =>
+                                    setData('title', event.target.value)
+                                }
+                            />
+                        </Field>
+
+                        <Field label="Type" error={error('type')}>
+                            <select
+                                value={data.type}
+                                onChange={(event) =>
+                                    setData('type', event.target.value)
+                                }
+                                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            >
+                                {types.map((type) => (
+                                    <option key={type} value={type}>
+                                        {type}
+                                    </option>
+                                ))}
+                            </select>
+                        </Field>
+
+                        <Field
+                            label="Sequence order"
+                            error={error('sequence_order')}
+                        >
+                            <Input
+                                type="number"
+                                min="1"
+                                value={data.sequence_order}
+                                onChange={(event) =>
+                                    setData(
+                                        'sequence_order',
+                                        event.target.value,
+                                    )
+                                }
+                            />
+                        </Field>
+
+                        <Field label="Percentage" error={error('percentage')}>
+                            <Input
+                                type="number"
+                                min="0"
+                                max="100"
+                                step="0.01"
+                                value={data.percentage}
+                                onChange={(event) =>
+                                    setData('percentage', event.target.value)
+                                }
+                            />
+                        </Field>
+
+                        <Field
+                            label="Planned amount"
+                            error={error('planned_amount')}
+                        >
+                            <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={data.planned_amount}
+                                onChange={(event) =>
+                                    setData(
+                                        'planned_amount',
+                                        event.target.value,
+                                    )
+                                }
+                            />
+                        </Field>
+
+                        <Field label="Paid amount" error={error('paid_amount')}>
+                            <Input
+                                type="number"
+                                min="0"
+                                step="0.01"
+                                value={data.paid_amount}
+                                onChange={(event) =>
+                                    setData('paid_amount', event.target.value)
+                                }
+                            />
+                        </Field>
+
+                        <Field label="Status" error={error('status')}>
+                            <select
+                                value={data.status}
+                                onChange={(event) =>
+                                    setData('status', event.target.value)
+                                }
+                                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            >
+                                {statuses.map((status) => (
+                                    <option key={status} value={status}>
+                                        {status}
+                                    </option>
+                                ))}
+                            </select>
+                        </Field>
+
+                        <Field
+                            label="Payment method"
+                            error={error('payment_method')}
+                        >
+                            <select
+                                value={data.payment_method}
+                                onChange={(event) =>
+                                    setData(
+                                        'payment_method',
+                                        event.target.value,
+                                    )
+                                }
+                                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            >
+                                <option value="">No method</option>
+                                {paymentMethods.map((method) => (
+                                    <option key={method} value={method}>
+                                        {method}
+                                    </option>
+                                ))}
+                            </select>
+                        </Field>
+
+                        <Field label="Due date" error={error('due_date')}>
+                            <Input
+                                type="date"
+                                value={data.due_date}
+                                onChange={(event) =>
+                                    setData('due_date', event.target.value)
+                                }
+                            />
+                        </Field>
+
+                        <Field label="Paid at" error={error('paid_at')}>
+                            <Input
+                                type="date"
+                                value={data.paid_at}
+                                onChange={(event) =>
+                                    setData('paid_at', event.target.value)
+                                }
+                            />
+                        </Field>
+
+                        <Field
+                            label="Billing start"
+                            error={error('billing_period_start')}
+                        >
+                            <Input
+                                type="date"
+                                value={data.billing_period_start}
+                                onChange={(event) =>
+                                    setData(
+                                        'billing_period_start',
+                                        event.target.value,
+                                    )
+                                }
+                            />
+                        </Field>
+
+                        <Field
+                            label="Billing end"
+                            error={error('billing_period_end')}
+                        >
+                            <Input
+                                type="date"
+                                value={data.billing_period_end}
+                                onChange={(event) =>
+                                    setData(
+                                        'billing_period_end',
+                                        event.target.value,
+                                    )
+                                }
+                            />
+                        </Field>
+
+                        <Field
+                            label="Reference number"
+                            error={error('reference_number')}
+                        >
+                            <Input
+                                value={data.reference_number}
+                                onChange={(event) =>
+                                    setData(
+                                        'reference_number',
+                                        event.target.value,
+                                    )
+                                }
+                            />
+                        </Field>
+
+                        <Field
+                            label="Reminder days before"
+                            error={error('reminder_days_before')}
+                        >
+                            <Input
+                                type="number"
+                                min="0"
+                                value={data.reminder_days_before}
+                                onChange={(event) =>
+                                    setData(
+                                        'reminder_days_before',
+                                        event.target.value,
+                                    )
+                                }
+                            />
+                        </Field>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                        <Field label="Description" error={error('description')}>
+                            <textarea
+                                value={data.description}
+                                onChange={(event) =>
+                                    setData('description', event.target.value)
+                                }
+                                className="min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            />
+                        </Field>
+                        <Field label="Admin notes" error={error('admin_notes')}>
+                            <textarea
+                                value={data.admin_notes}
+                                onChange={(event) =>
+                                    setData('admin_notes', event.target.value)
+                                }
+                                className="min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            />
+                        </Field>
+                    </div>
+
+                    <Field label="Client notes" error={error('client_notes')}>
+                        <textarea
+                            value={data.client_notes}
+                            onChange={(event) =>
+                                setData('client_notes', event.target.value)
+                            }
+                            className="min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                        />
+                    </Field>
+
+                    <label className="flex items-center gap-2 text-sm text-[#344054]">
+                        <input
+                            type="checkbox"
+                            checked={data.is_additional_charge}
+                            onChange={(event) =>
+                                setData(
+                                    'is_additional_charge',
+                                    event.target.checked,
+                                )
+                            }
+                        />
+                        Additional charge
+                    </label>
+
+                    <DialogFooter>
+                        <DialogClose asChild>
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={close}
+                            >
+                                Cancel
+                            </Button>
+                        </DialogClose>
+                        <Button type="submit" disabled={processing}>
+                            {processing ? 'Creating...' : 'Create payment'}
+                        </Button>
+                    </DialogFooter>
+                </form>
+            </DialogContent>
+        </Dialog>
     );
 }

@@ -36,6 +36,18 @@ export default function DomainAssetsIndex({
         router.delete(destroy.url(domainAsset.id), { preserveScroll: true });
     };
 
+    const formatDate = (value: string | null): string => {
+        if (!value) {
+            return '-';
+        }
+
+        return new Intl.DateTimeFormat('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        }).format(new Date(value));
+    };
+
     return (
         <>
             <Head title="Domain assets" />
@@ -91,10 +103,12 @@ export default function DomainAssetsIndex({
                                         </td>
                                         <td className="px-5 py-4 text-xs text-[#667085]">
                                             Registered:{' '}
-                                            {domainAsset.registered_at ?? '-'}
+                                            {formatDate(
+                                                domainAsset.registered_at,
+                                            )}
                                             <br />
                                             Expires:{' '}
-                                            {domainAsset.expired_at ?? '-'}
+                                            {formatDate(domainAsset.expired_at)}
                                         </td>
                                         <td className="px-5 py-4">
                                             <span className="rounded-full bg-brand-50 px-2.5 py-1 text-xs font-semibold text-brand-500">

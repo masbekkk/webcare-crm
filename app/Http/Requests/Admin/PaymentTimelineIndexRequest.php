@@ -31,6 +31,8 @@ class PaymentTimelineIndexRequest extends FormRequest
             'billing_from' => ['nullable', 'date'],
             'billing_to' => ['nullable', 'date'],
             'is_additional_charge' => ['nullable', 'boolean'],
+            'sort' => ['nullable', Rule::in(['client', 'due_date', 'planned_amount'])],
+            'direction' => ['nullable', Rule::in(['asc', 'desc'])],
         ];
     }
 }

@@ -1,345 +1,822 @@
-import { Head } from '@inertiajs/react';
+import { Head, Link } from '@inertiajs/react';
 import {
-    ArrowDown,
-    ArrowUp,
-    Box,
-    CalendarDays,
-    MoreVertical,
+    Activity,
+    AlertTriangle,
+    ArrowDownRight,
+    ArrowRight,
+    ArrowUpRight,
+    CalendarClock,
+    Globe2,
+    MonitorCheck,
+    MoreHorizontal,
+    Server,
+    ShieldAlert,
     Users,
+    Wrench,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { dashboard } from '@/routes';
+import { index as clientsIndex } from '@/routes/admin/clients';
+import { index as domainsIndex } from '@/routes/admin/domain-assets';
+import { index as hostingIndex } from '@/routes/admin/hosting-assets';
+import { index as issuesIndex } from '@/routes/admin/issues';
+import { index as monitorsIndex } from '@/routes/admin/monitors';
+import { index as paymentTimelinesIndex } from '@/routes/admin/payment-timelines';
+import { index as projectsIndex } from '@/routes/admin/projects';
+import { index as incidentsIndex } from '@/routes/admin/website-incidents';
 
-const monthlySales = [
-    { month: 'Jan', value: 156 },
-    { month: 'Feb', value: 378 },
-    { month: 'Mar', value: 191 },
-    { month: 'Apr', value: 289 },
-    { month: 'May', value: 174 },
-    { month: 'Jun', value: 184 },
-    { month: 'Jul', value: 281 },
-    { month: 'Aug', value: 101 },
-    { month: 'Sep', value: 205 },
-    { month: 'Oct', value: 381 },
-    { month: 'Nov', value: 269 },
-    { month: 'Dec', value: 104 },
-];
+type Summary = {
+    clients: number;
+    projects: number;
+    active_projects: number;
+    open_issues: number;
+    monitors_down: number;
+};
 
-const statistics = [
-    125, 220, 172, 255, 190, 310, 265, 355, 230, 420, 370, 460, 340, 520,
-    410, 585, 430, 640, 510, 690,
-];
+type Finance = {
+    payment_items: number;
+    planned_amount: string;
+    paid_amount: string;
+    remaining_amount: string;
+    overdue_count: number;
+};
 
-function TrendBadge({ value, type }: { value: string; type: 'up' | 'down' }) {
-    const Icon = type === 'up' ? ArrowUp : ArrowDown;
+type Monitoring = {
+    monitors: number;
+    active_monitors: number;
+    monitors_up: number;
+    monitors_down: number;
+    ongoing_incidents: number;
+};
 
+type ProjectStatus = {
+    status: string;
+    count: number;
+};
+
+type Relation = {
+    name?: string;
+    company_name?: string;
+};
+
+type IssueRow = {
+    id: number;
+    title: string;
+    priority: string;
+    status: string;
+    due_date: string | null;
+    client: Relation;
+    project: Relation;
+};
+
+type PaymentRow = {
+    id: number;
+    title: string;
+    planned_amount: string;
+    paid_amount: string;
+    remaining_amount: string;
+    due_date: string | null;
+    status: string;
+    client: Relation;
+    project: Relation;
+};
+
+type AssetRow = {
+    id: number;
+    type: 'domain' | 'hosting';
+    name: string;
+    provider: string | null;
+    expired_at: string | null;
+    client: Relation;
+    project: Relation | null;
+};
+
+type MaintenanceRow = {
+    id: number;
+    title: string;
+    status: string;
+    scheduled_at: string | null;
+    project: Relation;
+    handler: Relation | null;
+};
+
+function money(value: string): string {
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0,
+    }).format(Number(value));
+}
+
+function displayDate(value: string | null): string {
+    if (!value) {
+        return '-';
+    }
+
+    const parsed = new Date(value);
+
+    if (Number.isNaN(parsed.getTime())) {
+        return value;
+    }
+
+    return new Intl.DateTimeFormat('id-ID', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+    }).format(parsed);
+}
+
+function percent(value: number, total: number): number {
+    if (total === 0) {
+        return 0;
+    }
+
+    return Math.round((value / total) * 100);
+}
+
+function clampPercent(value: number): number {
+    return Math.max(0, Math.min(value, 100));
+}
+
+function statusTone(status: string): string {
+    if (['paid', 'resolved', 'up', 'completed', 'active'].includes(status)) {
+        return 'bg-success-50 text-success-600';
+    }
+
+    if (['down', 'overdue', 'urgent', 'high', 'ongoing'].includes(status)) {
+        return 'bg-error-50 text-error-600';
+    }
+
+    if (['waiting', 'planned', 'in_progress'].includes(status)) {
+        return 'bg-[#FFFAEB] text-[#DC6803]';
+    }
+
+    return 'bg-brand-50 text-brand-500';
+}
+
+function Badge({ value }: { value: string }) {
     return (
         <span
-            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-semibold ${
-                type === 'up'
-                    ? 'bg-success-50 text-success-600'
-                    : 'bg-error-50 text-error-600'
-            }`}
+            className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${statusTone(value)}`}
         >
-            <Icon className="size-4" strokeWidth={2.4} />
-            {value}
+            {value.replaceAll('_', ' ')}
         </span>
+    );
+}
+
+function Card({
+    children,
+    className = '',
+}: {
+    children: React.ReactNode;
+    className?: string;
+}) {
+    return (
+        <section
+            className={`rounded-2xl border border-[#E4E7EC] bg-white ${className}`}
+        >
+            {children}
+        </section>
+    );
+}
+
+function CardHeader({
+    title,
+    subtitle,
+    href,
+}: {
+    title: string;
+    subtitle?: string;
+    href?: string;
+}) {
+    return (
+        <div className="flex items-start justify-between gap-4">
+            <div>
+                <h2 className="text-xl font-semibold text-[#101828]">
+                    {title}
+                </h2>
+                {subtitle && (
+                    <p className="mt-1 text-sm text-[#475467]">{subtitle}</p>
+                )}
+            </div>
+            {href ? (
+                <Link
+                    href={href}
+                    className="inline-flex h-9 items-center gap-1 rounded-lg px-2 text-sm font-semibold text-brand-500 hover:bg-brand-50"
+                >
+                    View
+                    <ArrowRight className="size-4" />
+                </Link>
+            ) : (
+                <button
+                    type="button"
+                    className="flex size-9 items-center justify-center rounded-lg text-[#98A2B3] hover:bg-[#F9FAFB] hover:text-[#667085]"
+                    aria-label={`${title} options`}
+                >
+                    <MoreHorizontal className="size-5" />
+                </button>
+            )}
+        </div>
     );
 }
 
 function MetricCard({
     title,
     value,
-    trend,
-    trendType,
+    subtitle,
+    href,
     icon: Icon,
+    trend,
+    trendTone,
 }: {
     title: string;
     value: string;
+    subtitle: string;
+    href: string;
+    icon: LucideIcon;
     trend: string;
-    trendType: 'up' | 'down';
-    icon: typeof Users;
+    trendTone: 'up' | 'down';
 }) {
+    const TrendIcon = trendTone === 'up' ? ArrowUpRight : ArrowDownRight;
+    const trendClass =
+        trendTone === 'up'
+            ? 'bg-success-50 text-success-600'
+            : 'bg-error-50 text-error-600';
+
     return (
-        <section className="rounded-2xl border border-[#E4E7EC] bg-white p-6 lg:p-7">
+        <Link
+            href={href}
+            className="rounded-2xl border border-[#E4E7EC] bg-white p-6 transition hover:border-brand-200 hover:shadow-xs"
+        >
             <div className="flex size-12 items-center justify-center rounded-xl bg-[#F2F4F7] text-[#344054]">
                 <Icon className="size-6" strokeWidth={1.8} />
             </div>
             <p className="mt-8 text-sm font-medium text-[#475467]">{title}</p>
-            <div className="mt-3 flex items-end justify-between gap-4">
-                <h2 className="text-[32px] leading-9 font-bold tracking-[-0.02em] text-[#101828]">
-                    {value}
-                </h2>
-                <TrendBadge value={trend} type={trendType} />
+            <div className="mt-3 flex items-end justify-between gap-3">
+                <p className="text-3xl font-bold text-[#101828]">{value}</p>
+                <span
+                    className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-sm font-semibold ${trendClass}`}
+                >
+                    <TrendIcon className="size-4" />
+                    {trend}
+                </span>
             </div>
-        </section>
+            <p className="mt-2 text-sm text-[#667085]">{subtitle}</p>
+        </Link>
     );
 }
 
-function CardMenu() {
+function EmptyState({ text }: { text: string }) {
     return (
-        <button
-            type="button"
-            className="rounded-lg p-1.5 text-[#98A2B3] hover:bg-[#F2F4F7] hover:text-[#667085]"
-            aria-label="Card options"
-        >
-            <MoreVertical className="size-5" strokeWidth={2.2} />
-        </button>
+        <div className="rounded-xl border border-dashed border-[#D0D5DD] px-5 py-8 text-sm text-[#667085]">
+            {text}
+        </div>
     );
 }
 
-function MonthlySalesChart() {
-    return (
-        <section className="rounded-2xl border border-[#E4E7EC] bg-white p-6 lg:p-7">
-            <div className="flex items-start justify-between">
-                <h2 className="text-xl font-semibold text-[#101828]">
-                    Monthly Sales
-                </h2>
-                <CardMenu />
-            </div>
+export default function Dashboard({
+    summary,
+    finance,
+    monitoring,
+    projectStatus,
+    recentIssues,
+    upcomingPayments,
+    expiringAssets,
+    maintenanceSchedule,
+}: {
+    summary: Summary;
+    finance: Finance;
+    monitoring: Monitoring;
+    projectStatus: ProjectStatus[];
+    recentIssues: IssueRow[];
+    upcomingPayments: PaymentRow[];
+    expiringAssets: AssetRow[];
+    maintenanceSchedule: MaintenanceRow[];
+}) {
+    const monitorRisk = monitoring.monitors_down + monitoring.ongoing_incidents;
+    const paymentProgress = clampPercent(
+        percent(Number(finance.paid_amount), Number(finance.planned_amount)),
+    );
+    const activeProjectPercent = clampPercent(
+        percent(summary.active_projects, summary.projects),
+    );
 
-            <div className="mt-8 overflow-x-auto">
-                <div className="grid min-w-[680px] grid-cols-[40px_1fr] gap-4">
-                    <div className="grid h-[170px] grid-rows-5 text-right text-sm text-[#344054]">
-                        {[400, 300, 200, 100, 0].map((label) => (
-                            <span key={label}>{label}</span>
-                        ))}
-                    </div>
+    return (
+        <>
+            <Head title="Dashboard" />
+            <div className="space-y-6 p-4 lg:p-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <div className="relative h-[170px] border-b border-[#E4E7EC]">
-                            {[0, 1, 2, 3].map((line) => (
-                                <div
-                                    key={line}
-                                    className="absolute left-0 h-px w-full bg-[#F2F4F7]"
-                                    style={{ top: `${line * 25}%` }}
-                                />
-                            ))}
-                            <div className="absolute inset-x-0 bottom-0 flex h-full items-end justify-between px-3">
-                                {monthlySales.map((item) => (
-                                    <div
-                                        key={item.month}
-                                        className="w-5 rounded-t-md bg-brand-500"
-                                        style={{
-                                            height: `${(item.value / 420) * 100}%`,
-                                        }}
-                                    />
-                                ))}
-                            </div>
-                        </div>
-                        <div className="mt-4 flex justify-between px-2 text-sm font-medium text-[#101828]">
-                            {monthlySales.map((item) => (
-                                <span key={item.month}>{item.month}</span>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
-}
-
-function MonthlyTarget() {
-    return (
-        <section className="overflow-hidden rounded-2xl border border-[#E4E7EC] bg-white">
-            <div className="p-7 pb-8">
-                <div className="flex items-start justify-between">
-                    <div>
-                        <h2 className="text-xl font-semibold text-[#101828]">
-                            Monthly Target
-                        </h2>
-                        <p className="mt-2 text-sm font-medium text-[#475467]">
-                            Target you've set for each month
+                        <h1 className="text-3xl font-semibold text-[#101828]">
+                            Dashboard
+                        </h1>
+                        <p className="mt-2 text-sm text-[#475467]">
+                            Snapshot projects, payments, monitoring, issues,
+                            and renewals.
                         </p>
                     </div>
-                    <CardMenu />
+                    <div className="inline-flex items-center gap-2 rounded-full border border-[#E4E7EC] bg-white px-4 py-2 text-sm font-medium text-[#344054]">
+                        <span className="size-2 rounded-full bg-success-500" />
+                        {summary.active_projects} active of {summary.projects}{' '}
+                        projects
+                    </div>
                 </div>
 
-                <div className="relative mx-auto mt-7 h-[210px] max-w-[380px]">
+                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-4">
+                    <MetricCard
+                        title="Clients"
+                        value={`${summary.clients}`}
+                        subtitle="Total managed clients"
+                        href={clientsIndex.url()}
+                        icon={Users}
+                        trend={`${summary.clients}`}
+                        trendTone="up"
+                    />
+                    <MetricCard
+                        title="Active projects"
+                        value={`${summary.active_projects}`}
+                        subtitle={`${activeProjectPercent}% of total projects`}
+                        href={projectsIndex.url()}
+                        icon={Activity}
+                        trend={`${activeProjectPercent}%`}
+                        trendTone="up"
+                    />
+                    <MetricCard
+                        title="Open issues"
+                        value={`${summary.open_issues}`}
+                        subtitle="Needs follow-up"
+                        href={issuesIndex.url()}
+                        icon={AlertTriangle}
+                        trend={`${summary.open_issues}`}
+                        trendTone={summary.open_issues > 0 ? 'down' : 'up'}
+                    />
+                    <MetricCard
+                        title="Monitor risk"
+                        value={`${monitorRisk}`}
+                        subtitle={`${monitoring.monitors_down} down, ${monitoring.ongoing_incidents} incidents`}
+                        href={monitorsIndex.url()}
+                        icon={ShieldAlert}
+                        trend={`${monitorRisk}`}
+                        trendTone={monitorRisk > 0 ? 'down' : 'up'}
+                    />
+                </div>
+
+                <div className="grid gap-6 xl:grid-cols-12">
+                    <div className="space-y-6 xl:col-span-7">
+                        <PaymentHealthCard
+                            finance={finance}
+                            paymentProgress={paymentProgress}
+                        />
+                        <ProjectStatusCard
+                            projectStatus={projectStatus}
+                            total={summary.projects}
+                        />
+                    </div>
+
+                    <div className="space-y-6 xl:col-span-5">
+                        <PaymentTargetCard
+                            finance={finance}
+                            paymentProgress={paymentProgress}
+                        />
+                        <MonitorHealthCard monitoring={monitoring} />
+                    </div>
+                </div>
+
+                <div className="grid gap-6 xl:grid-cols-2">
+                    <IssueList issues={recentIssues} />
+                    <PaymentList payments={upcomingPayments} />
+                </div>
+
+                <div className="grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+                    <AssetList assets={expiringAssets} />
+                    <MaintenanceList maintenanceSchedule={maintenanceSchedule} />
+                </div>
+            </div>
+        </>
+    );
+}
+
+function PaymentHealthCard({
+    finance,
+    paymentProgress,
+}: {
+    finance: Finance;
+    paymentProgress: number;
+}) {
+    return (
+        <Card className="p-6">
+            <CardHeader
+                title="Payment Health"
+                subtitle="Planned, paid, and remaining collection"
+                href={paymentTimelinesIndex.url()}
+            />
+            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                <MiniStat label="Planned" value={money(finance.planned_amount)} />
+                <MiniStat label="Paid" value={money(finance.paid_amount)} />
+                <MiniStat
+                    label="Remaining"
+                    value={money(finance.remaining_amount)}
+                />
+            </div>
+            <div className="mt-8">
+                <div className="flex items-center justify-between text-sm font-medium text-[#475467]">
+                    <span>Collection progress</span>
+                    <span>{paymentProgress}%</span>
+                </div>
+                <div className="mt-3 h-3 overflow-hidden rounded-full bg-[#F2F4F7]">
+                    <div
+                        className="h-full rounded-full bg-brand-500"
+                        style={{ width: `${paymentProgress}%` }}
+                    />
+                </div>
+            </div>
+        </Card>
+    );
+}
+
+function PaymentTargetCard({
+    finance,
+    paymentProgress,
+}: {
+    finance: Finance;
+    paymentProgress: number;
+}) {
+    const strokeDasharray = `${paymentProgress}, 100`;
+
+    return (
+        <Card className="overflow-hidden">
+            <div className="p-7 pb-8">
+                <CardHeader
+                    title="Monthly Target"
+                    subtitle="Collection target progress"
+                />
+                <div className="relative mx-auto mt-8 h-44 max-w-[360px]">
                     <svg
-                        viewBox="0 0 360 190"
+                        viewBox="0 0 200 120"
                         className="h-full w-full"
-                        aria-hidden="true"
+                        aria-label={`Payment progress ${paymentProgress}%`}
                     >
                         <path
-                            d="M45 150 A135 135 0 0 1 315 150"
+                            d="M 24 100 A 76 76 0 0 1 176 100"
                             fill="none"
-                            stroke="#E4E7EC"
+                            pathLength="100"
+                            stroke="#F2F4F7"
                             strokeLinecap="round"
                             strokeWidth="14"
                         />
                         <path
-                            d="M45 150 A135 135 0 0 1 315 150"
+                            d="M 24 100 A 76 76 0 0 1 176 100"
                             fill="none"
-                            stroke="#5867F9"
-                            strokeDasharray="330 424"
+                            pathLength="100"
+                            stroke="#465FFF"
+                            strokeDasharray={strokeDasharray}
                             strokeLinecap="round"
                             strokeWidth="14"
                         />
                     </svg>
-                    <div className="absolute inset-x-0 top-[96px] text-center">
-                        <p className="text-[40px] leading-none font-bold tracking-[-0.02em] text-[#101828]">
-                            75.55%
+                    <div className="absolute inset-x-0 bottom-2 text-center">
+                        <p className="text-4xl font-bold text-[#101828]">
+                            {paymentProgress}%
                         </p>
-                        <div className="mt-3 flex justify-center">
-                            <TrendBadge value="+10%" type="up" />
-                        </div>
+                        <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-success-50 px-2.5 py-1 text-xs font-semibold text-success-600">
+                            <ArrowUpRight className="size-3.5" />
+                            On track
+                        </span>
                     </div>
                 </div>
-
-                <p className="mx-auto mt-2 max-w-[360px] text-center text-base leading-7 font-medium text-[#475467]">
-                    You earn $3287 today, it's higher than last month. Keep up
-                    your good work!
+                <p className="mx-auto mt-6 max-w-sm text-center text-sm text-[#475467]">
+                    {finance.payment_items} payment items tracked, with{' '}
+                    {finance.overdue_count} overdue items.
                 </p>
             </div>
-
-            <div className="grid grid-cols-3 bg-[#F2F4F7] px-6 py-6">
-                {[
-                    ['Target', '$20K', 'down'],
-                    ['Revenue', '$20K', 'up'],
-                    ['Today', '$20K', 'up'],
-                ].map(([label, value, type], index) => {
-                    const Icon = type === 'up' ? ArrowUp : ArrowDown;
-
-                    return (
-                        <div
-                            key={label}
-                            className={`text-center ${index > 0 ? 'border-l border-[#E4E7EC]' : ''}`}
-                        >
-                            <p className="text-sm font-medium text-[#475467]">
-                                {label}
-                            </p>
-                            <div className="mt-2 flex items-center justify-center gap-1">
-                                <span className="text-2xl font-bold text-[#101828]">
-                                    {value}
-                                </span>
-                                <Icon
-                                    className={`size-5 ${type === 'up' ? 'text-success-600' : 'text-error-600'}`}
-                                />
-                            </div>
-                        </div>
-                    );
-                })}
+            <div className="grid grid-cols-3 bg-[#F2F4F7] px-4 py-6">
+                <TargetSummary label="Target" value={money(finance.planned_amount)} />
+                <TargetSummary label="Revenue" value={money(finance.paid_amount)} />
+                <TargetSummary
+                    label="Pending"
+                    value={money(finance.remaining_amount)}
+                />
             </div>
-        </section>
+        </Card>
     );
 }
 
-function StatisticsCard() {
+function ProjectStatusCard({
+    projectStatus,
+    total,
+}: {
+    projectStatus: ProjectStatus[];
+    total: number;
+}) {
     return (
-        <section className="rounded-2xl border border-[#E4E7EC] bg-white p-6 lg:p-7">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div>
-                    <h2 className="text-xl font-semibold text-[#101828]">
-                        Statistics
-                    </h2>
-                    <p className="mt-2 text-sm font-medium text-[#475467]">
-                        Target you've set for each month
-                    </p>
-                </div>
-                <div className="flex flex-wrap gap-3">
-                    <div className="inline-flex h-11 rounded-[10px] bg-[#F2F4F7] p-1">
-                        {['Monthly', 'Quarterly', 'Annually'].map(
-                            (item, index) => (
-                                <button
-                                    key={item}
-                                    type="button"
-                                    className={`rounded-lg px-4 text-sm font-semibold ${
-                                        index === 0
-                                            ? 'bg-white text-[#101828] shadow-[0_1px_2px_rgba(16,24,40,0.05)]'
-                                            : 'text-[#667085]'
-                                    }`}
-                                >
-                                    {item}
-                                </button>
-                            ),
-                        )}
-                    </div>
-                    <button
-                        type="button"
-                        className="inline-flex h-11 items-center gap-3 rounded-[10px] border border-[#E4E7EC] bg-white px-4 text-sm font-semibold text-[#344054] hover:bg-[#F9FAFB]"
-                    >
-                        <CalendarDays
-                            className="size-5 text-[#667085]"
-                            strokeWidth={1.8}
-                        />
-                        May 10 to May 16
-                    </button>
-                </div>
-            </div>
-
-            <div className="mt-8 overflow-x-auto">
-                <div className="grid min-w-[900px] grid-cols-[42px_1fr] gap-5">
-                    <div className="grid h-[260px] grid-rows-5 text-right text-sm text-[#344054]">
-                        {[250, 200, 150, 100, 50].map((label) => (
-                            <span key={label}>{label}</span>
-                        ))}
-                    </div>
-                    <div className="relative h-[260px]">
-                        {[0, 1, 2, 3, 4].map((line) => (
-                            <div
-                                key={line}
-                                className="absolute left-0 h-px w-full bg-[#F2F4F7]"
-                                style={{ top: `${line * 25}%` }}
-                            />
-                        ))}
-                        <svg
-                            viewBox="0 0 920 260"
-                            className="absolute inset-0 h-full w-full"
-                            preserveAspectRatio="none"
-                        >
-                            <path
-                                d={`M 0 ${260 - statistics[0] / 3} ${statistics
-                                    .map(
-                                        (value, index) =>
-                                            `L ${(index / (statistics.length - 1)) * 920} ${260 - value / 3}`,
-                                    )
-                                    .join(' ')}`}
-                                fill="none"
-                                stroke="#465FFF"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="4"
-                            />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-        </section>
-    );
-}
-
-export default function Dashboard() {
-    return (
-        <>
-            <Head title="Dashboard" />
-            <div className="p-4 lg:p-6">
-                <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(360px,0.95fr)]">
-                    <div className="grid gap-6">
-                        <div className="grid gap-6 md:grid-cols-2">
-                            <MetricCard
-                                title="Customers"
-                                value="3,782"
-                                trend="11.01%"
-                                trendType="up"
-                                icon={Users}
-                            />
-                            <MetricCard
-                                title="Orders"
-                                value="5,359"
-                                trend="9.05%"
-                                trendType="down"
-                                icon={Box}
-                            />
-                        </div>
-                        <MonthlySalesChart />
-                    </div>
-                    <MonthlyTarget />
-                </div>
-
+        <Card className="p-6">
+            <CardHeader
+                title="Project Status"
+                subtitle="Distribution across project workflow"
+                href={projectsIndex.url()}
+            />
+            {projectStatus.length === 0 ? (
                 <div className="mt-6">
-                    <StatisticsCard />
+                    <EmptyState text="No projects yet." />
                 </div>
+            ) : (
+                <div className="mt-8 space-y-5">
+                    {projectStatus.map((item) => {
+                        const itemPercent = clampPercent(
+                            percent(item.count, total),
+                        );
+
+                        return (
+                            <div key={item.status}>
+                                <div className="flex items-center justify-between gap-4">
+                                    <Badge value={item.status} />
+                                    <span className="text-sm font-semibold text-[#101828]">
+                                        {item.count}
+                                    </span>
+                                </div>
+                                <div className="mt-3 h-2 overflow-hidden rounded-full bg-[#F2F4F7]">
+                                    <div
+                                        className="h-full rounded-full bg-brand-500"
+                                        style={{ width: `${itemPercent}%` }}
+                                    />
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </Card>
+    );
+}
+
+function MonitorHealthCard({ monitoring }: { monitoring: Monitoring }) {
+    return (
+        <Card className="p-6">
+            <CardHeader
+                title="Monitor Health"
+                subtitle="Availability and incident overview"
+                href={incidentsIndex.url()}
+            />
+            <div className="mt-6 grid grid-cols-2 gap-4">
+                <MonitorStat
+                    label="Active"
+                    value={monitoring.active_monitors}
+                    total={monitoring.monitors}
+                    icon={MonitorCheck}
+                />
+                <MonitorStat
+                    label="Up"
+                    value={monitoring.monitors_up}
+                    total={monitoring.monitors}
+                    icon={Activity}
+                />
+                <MonitorStat
+                    label="Down"
+                    value={monitoring.monitors_down}
+                    total={monitoring.monitors}
+                    icon={ShieldAlert}
+                />
+                <MonitorStat
+                    label="Incidents"
+                    value={monitoring.ongoing_incidents}
+                    total={monitoring.monitors}
+                    icon={AlertTriangle}
+                />
             </div>
-        </>
+        </Card>
+    );
+}
+
+function IssueList({ issues }: { issues: IssueRow[] }) {
+    return (
+        <Card className="p-6">
+            <CardHeader
+                title="Recent Issues"
+                subtitle="Latest unresolved client work"
+                href={issuesIndex.url()}
+            />
+            <div className="mt-6">
+                {issues.length === 0 ? (
+                    <EmptyState text="No open issues." />
+                ) : (
+                    <div className="divide-y divide-[#E4E7EC]">
+                        {issues.map((issue) => (
+                            <ListRow key={issue.id}>
+                                <div className="min-w-0">
+                                    <p className="truncate font-semibold text-[#101828]">
+                                        {issue.title}
+                                    </p>
+                                    <p className="mt-1 text-sm text-[#667085]">
+                                        {issue.client.company_name} /{' '}
+                                        {issue.project.name}
+                                    </p>
+                                    <p className="mt-1 text-xs text-[#667085]">
+                                        Due {displayDate(issue.due_date)}
+                                    </p>
+                                </div>
+                                <div className="flex shrink-0 flex-col items-end gap-2">
+                                    <Badge value={issue.priority} />
+                                    <Badge value={issue.status} />
+                                </div>
+                            </ListRow>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </Card>
+    );
+}
+
+function PaymentList({ payments }: { payments: PaymentRow[] }) {
+    return (
+        <Card className="p-6">
+            <CardHeader
+                title="Upcoming Payments"
+                subtitle="Unpaid timeline items"
+                href={paymentTimelinesIndex.url()}
+            />
+            <div className="mt-6">
+                {payments.length === 0 ? (
+                    <EmptyState text="No unpaid payment timeline items." />
+                ) : (
+                    <div className="divide-y divide-[#E4E7EC]">
+                        {payments.map((payment) => (
+                            <ListRow key={payment.id}>
+                                <div className="min-w-0">
+                                    <p className="truncate font-semibold text-[#101828]">
+                                        {payment.title}
+                                    </p>
+                                    <p className="mt-1 text-sm text-[#667085]">
+                                        {payment.client.company_name} /{' '}
+                                        {payment.project.name}
+                                    </p>
+                                    <p className="mt-1 text-xs text-[#667085]">
+                                        Due {displayDate(payment.due_date)}
+                                    </p>
+                                </div>
+                                <div className="shrink-0 text-right">
+                                    <p className="text-sm font-semibold text-[#101828]">
+                                        {money(payment.remaining_amount)}
+                                    </p>
+                                    <div className="mt-2">
+                                        <Badge value={payment.status} />
+                                    </div>
+                                </div>
+                            </ListRow>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </Card>
+    );
+}
+
+function AssetList({ assets }: { assets: AssetRow[] }) {
+    return (
+        <Card className="p-6">
+            <CardHeader title="Expiring Assets" subtitle="Domains and hosting" />
+            <div className="mt-6">
+                {assets.length === 0 ? (
+                    <EmptyState text="No domain or hosting renewals within 45 days." />
+                ) : (
+                    <div className="divide-y divide-[#E4E7EC]">
+                        {assets.map((asset) => {
+                            const Icon = asset.type === 'domain' ? Globe2 : Server;
+                            const href =
+                                asset.type === 'domain'
+                                    ? domainsIndex.url()
+                                    : hostingIndex.url();
+
+                            return (
+                                <Link
+                                    key={`${asset.type}-${asset.id}`}
+                                    href={href}
+                                    className="flex items-start gap-3 py-4 hover:bg-[#F9FAFB]"
+                                >
+                                    <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#F2F4F7] text-[#344054]">
+                                        <Icon className="size-5" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate font-semibold text-[#101828]">
+                                            {asset.name}
+                                        </p>
+                                        <p className="mt-1 text-sm text-[#667085]">
+                                            {asset.client.company_name} /{' '}
+                                            {asset.project?.name ?? '-'}
+                                        </p>
+                                        <p className="mt-1 text-xs text-[#667085]">
+                                            Expires{' '}
+                                            {displayDate(asset.expired_at)}
+                                        </p>
+                                    </div>
+                                </Link>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+        </Card>
+    );
+}
+
+function MaintenanceList({
+    maintenanceSchedule,
+}: {
+    maintenanceSchedule: MaintenanceRow[];
+}) {
+    return (
+        <Card className="p-6">
+            <CardHeader
+                title="Maintenance Schedule"
+                subtitle="Planned operation work"
+            />
+            <div className="mt-6">
+                {maintenanceSchedule.length === 0 ? (
+                    <EmptyState text="No planned maintenance." />
+                ) : (
+                    <div className="divide-y divide-[#E4E7EC]">
+                        {maintenanceSchedule.map((log) => (
+                            <ListRow key={log.id}>
+                                <div className="flex min-w-0 items-start gap-3">
+                                    <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-500">
+                                        <Wrench className="size-5" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <p className="truncate font-semibold text-[#101828]">
+                                            {log.title}
+                                        </p>
+                                        <p className="mt-1 text-sm text-[#667085]">
+                                            {log.project.name} /{' '}
+                                            {log.handler?.name ?? 'Unassigned'}
+                                        </p>
+                                        <p className="mt-1 inline-flex items-center gap-1 text-xs text-[#667085]">
+                                            <CalendarClock className="size-3.5" />
+                                            {displayDate(log.scheduled_at)}
+                                        </p>
+                                    </div>
+                                </div>
+                                <Badge value={log.status} />
+                            </ListRow>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </Card>
+    );
+}
+
+function MiniStat({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="rounded-xl border border-[#E4E7EC] bg-[#FCFCFD] p-4">
+            <p className="text-sm font-medium text-[#667085]">{label}</p>
+            <p className="mt-3 text-lg font-bold text-[#101828]">{value}</p>
+        </div>
+    );
+}
+
+function TargetSummary({ label, value }: { label: string; value: string }) {
+    return (
+        <div className="border-l border-[#E4E7EC] px-3 text-center first:border-l-0">
+            <p className="text-sm font-medium text-[#475467]">{label}</p>
+            <p className="mt-2 text-lg font-bold text-[#101828]">{value}</p>
+        </div>
+    );
+}
+
+function MonitorStat({
+    label,
+    value,
+    total,
+    icon: Icon,
+}: {
+    label: string;
+    value: number;
+    total: number;
+    icon: LucideIcon;
+}) {
+    return (
+        <div className="rounded-xl border border-[#E4E7EC] p-4">
+            <div className="flex items-center justify-between gap-3">
+                <p className="text-sm font-medium text-[#667085]">{label}</p>
+                <Icon className="size-5 text-[#667085]" />
+            </div>
+            <p className="mt-4 text-2xl font-bold text-[#101828]">{value}</p>
+            <p className="mt-1 text-xs text-[#667085]">
+                {percent(value, total)}% of monitors
+            </p>
+        </div>
+    );
+}
+
+function ListRow({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <div className="flex items-start justify-between gap-4 py-4">
+            {children}
+        </div>
     );
 }
 

@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-react';
+import { Bell, BookOpen, Folder, LayoutGrid, Menu } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import AppLogoIcon from '@/components/app-logo-icon';
 import { Breadcrumbs } from '@/components/breadcrumbs';
@@ -38,6 +38,24 @@ import type { BreadcrumbItem, NavItem } from '@/types';
 type Props = {
     breadcrumbs?: BreadcrumbItem[];
 };
+
+const notifications = [
+    {
+        title: 'Project proposal approved',
+        description: 'Webcare CRM proposal moved to active project.',
+        time: '2 min ago',
+    },
+    {
+        title: 'Invoice reminder',
+        description: 'Retainer payment for Acme Studio is due today.',
+        time: '1 hour ago',
+    },
+    {
+        title: 'Monitor recovered',
+        description: 'Company profile site is back online.',
+        time: '3 hours ago',
+    },
+];
 
 const mainNavItems: NavItem[] = [
     {
@@ -178,13 +196,6 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
 
                     <div className="ml-auto flex items-center space-x-2">
                         <div className="relative flex items-center space-x-1">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="group h-9 w-9 cursor-pointer"
-                            >
-                                <Search className="!size-5 opacity-80 group-hover:opacity-100" />
-                            </Button>
                             <div className="ml-1 hidden gap-1 lg:flex">
                                 {rightNavItems.map((item) => (
                                     <Tooltip key={item.title}>
@@ -210,6 +221,57 @@ export function AppHeader({ breadcrumbs = [] }: Props) {
                                 ))}
                             </div>
                         </div>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="relative size-10 rounded-full"
+                                    aria-label="Notifications"
+                                >
+                                    <Bell className="size-5 opacity-80" />
+                                    <span className="absolute top-2 right-2 size-2 rounded-full bg-[#FD853A]" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                className="w-[320px] p-0"
+                                align="end"
+                            >
+                                <div className="border-b border-[#E4E7EC] px-4 py-3">
+                                    <p className="text-sm font-semibold text-[#101828]">
+                                        Notifications
+                                    </p>
+                                    <p className="text-xs text-[#667085]">
+                                        Latest account activity.
+                                    </p>
+                                </div>
+                                <div className="max-h-[320px] overflow-y-auto">
+                                    {notifications.map((notification) => (
+                                        <div
+                                            key={notification.title}
+                                            className="border-b border-[#F2F4F7] px-4 py-3 last:border-b-0"
+                                        >
+                                            <div className="flex items-start gap-3">
+                                                <span className="mt-1 size-2 rounded-full bg-brand-500" />
+                                                <div className="min-w-0 flex-1">
+                                                    <p className="text-sm font-semibold text-[#101828]">
+                                                        {notification.title}
+                                                    </p>
+                                                    <p className="mt-1 text-xs leading-5 text-[#667085]">
+                                                        {
+                                                            notification.description
+                                                        }
+                                                    </p>
+                                                    <p className="mt-2 text-xs text-[#98A2B3]">
+                                                        {notification.time}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                                 <Button

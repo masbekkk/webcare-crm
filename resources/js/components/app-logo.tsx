@@ -8,7 +8,7 @@ export default function AppLogo() {
             </div>
             <div className="ml-3 grid flex-1 text-left">
                 <span className="truncate text-[28px] leading-8 font-bold text-[#101828]">
-                    TailAdmin
+                    Webcare
                 </span>
             </div>
         </>

@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\ProjectIndexRequest;
 use App\Http\Requests\Admin\ProjectRequest;
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\User;
 use App\Services\ProjectService;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -16,15 +18,21 @@ class ProjectController extends Controller
 {
     public function __construct(private readonly ProjectService $projects) {}
 
-    public function index(): Response
+    public function index(ProjectIndexRequest $request): Response
     {
+        $filters = $request->validated();
+        $query = Project::query()
+            ->with(['client:id,company_name', 'creator:id,name'])
+            ->withCount(['links', 'members', 'paymentTimelines'])
+            ->tap(fn (Builder $query) => $this->applyFilters($query, $filters));
+        $stats = $this->stats((clone $query)->withoutEagerLoads());
+
         return Inertia::render('admin/projects/index', [
-            'projects' => Project::query()
-                ->with(['client:id,company_name', 'creator:id,name'])
-                ->withCount(['links', 'members', 'paymentTimelines'])
-                ->latest()
+            'projects' => $this->applySorting($query, $filters)
                 ->paginate(10)
                 ->withQueryString(),
+            'filters' => $this->filters($filters),
+            'stats' => $stats,
         ]);
     }
 
@@ -86,6 +94,77 @@ class ProjectController extends Controller
                 ->where('is_active', true)
                 ->orderBy('name')
                 ->get(['id', 'name', 'email']),
+        ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    private function applyFilters(Builder $query, array $filters): void
+    {
+        $query->when($filters['search'] ?? null, function (Builder $query, string $search): void {
+            $query->where(function (Builder $query) use ($search): void {
+                $query
+                    ->where('projects.name', 'like', "%{$search}%")
+                    ->orWhere('projects.slug', 'like', "%{$search}%")
+                    ->orWhere('projects.project_type', 'like', "%{$search}%")
+                    ->orWhere('projects.status', 'like', "%{$search}%")
+                    ->orWhereHas('client', fn (Builder $query) => $query->where('company_name', 'like', "%{$search}%"));
+            });
+        });
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    private function applySorting(Builder $query, array $filters): Builder
+    {
+        $direction = $filters['direction'] ?? 'asc';
+
+        return match ($filters['sort'] ?? null) {
+            'project' => $query->orderBy('name', $direction),
+            'client' => $query
+                ->select('projects.*')
+                ->leftJoin('clients', 'clients.id', '=', 'projects.client_id')
+                ->orderBy('clients.company_name', $direction)
+                ->orderBy('projects.name'),
+            default => $query->latest(),
+        };
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     * @return array<string, string|null>
+     */
+    private function filters(array $filters): array
+    {
+        return [
+            'search' => $filters['search'] ?? null,
+            'sort' => $filters['sort'] ?? null,
+            'direction' => $filters['direction'] ?? null,
+        ];
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function stats(Builder $query): array
+    {
+        $stats = $query
+            ->toBase()
+            ->cloneWithout(['columns', 'orders', 'limit', 'offset'])
+            ->cloneWithoutBindings(['select', 'order'])
+            ->selectRaw('COUNT(*) as total_count')
+            ->selectRaw("SUM(CASE WHEN projects.status = 'live' THEN 1 ELSE 0 END) as live_count")
+            ->selectRaw("SUM(CASE WHEN projects.status IN ('planning', 'development', 'testing') THEN 1 ELSE 0 END) as in_progress_count")
+            ->selectRaw("SUM(CASE WHEN projects.status IN ('paused', 'cancelled') THEN 1 ELSE 0 END) as blocked_count")
+            ->first();
+
+        return [
+            'total_count' => (int) $stats->total_count,
+            'live_count' => (int) $stats->live_count,
+            'in_progress_count' => (int) $stats->in_progress_count,
+            'blocked_count' => (int) $stats->blocked_count,
         ];
     }
 }

@@ -34,7 +34,50 @@ class ProjectManagementTest extends TestCase
             ->assertOk()
             ->assertInertia(fn (Assert $page) => $page
                 ->component('admin/projects/index')
+                ->where('filters.search', null)
+                ->where('stats.total_count', 1)
+                ->where('stats.live_count', 0)
                 ->has('projects.data', 1)
+                ->where('projects.data.0.name', 'Acme Website'));
+    }
+
+    public function test_admin_can_search_and_sort_projects_index(): void
+    {
+        $admin = User::factory()->create();
+        $acme = Client::create(['company_name' => 'Acme Studio']);
+        $zen = Client::create(['company_name' => 'Zen Works']);
+
+        Project::create([
+            'client_id' => $zen->id,
+            'name' => 'Zen Portal',
+            'slug' => 'zen-portal',
+            'project_type' => 'CRM',
+            'status' => 'development',
+            'created_by' => $admin->id,
+        ]);
+        Project::create([
+            'client_id' => $acme->id,
+            'name' => 'Acme Website',
+            'slug' => 'acme-website',
+            'project_type' => 'Company Profile',
+            'status' => 'live',
+            'created_by' => $admin->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.projects.index', [
+                'search' => 'acme',
+                'sort' => 'client',
+                'direction' => 'asc',
+            ]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('projects.data', 1)
+                ->where('filters.search', 'acme')
+                ->where('filters.sort', 'client')
+                ->where('filters.direction', 'asc')
+                ->where('stats.total_count', 1)
+                ->where('stats.live_count', 1)
                 ->where('projects.data.0.name', 'Acme Website'));
     }
 

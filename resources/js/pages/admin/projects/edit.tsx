@@ -31,7 +31,11 @@ export default function ProjectsEdit({
                         and payment timelines.
                     </p>
                 </div>
-                <ProjectForm clients={clients} users={users} project={project} />
+                <ProjectForm
+                    clients={clients}
+                    users={users}
+                    project={project}
+                />
             </div>
         </>
     );

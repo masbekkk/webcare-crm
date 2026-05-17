@@ -332,7 +332,7 @@ function SelectField({
         <select
             value={value}
             onChange={(event) => onChange(event.target.value)}
-            className="border-input bg-background h-9 w-full rounded-md border px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
         >
             {placeholder && <option value="">{placeholder}</option>}
             {options.map((option) => (
@@ -384,15 +384,18 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
 
     return (
         <form onSubmit={submit} className="flex flex-col gap-6">
-            <div className="rounded-lg border border-[#E4E7EC] bg-white p-6">
-                <div className="grid gap-5 lg:grid-cols-3">
+            <FormSection
+                title="Project identity"
+                description="Data utama untuk mengenali project dan status pengerjaan."
+            >
+                <div className="grid gap-5 lg:grid-cols-2">
                     <Field label="Client" error={error('client_id')}>
                         <select
                             value={data.client_id}
                             onChange={(event) =>
                                 setData('client_id', event.target.value)
                             }
-                            className="border-input bg-background h-9 w-full rounded-md border px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
                             <option value="">Select client</option>
                             {clients.map((client) => (
@@ -420,11 +423,10 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                             }
                         />
                     </Field>
+                </div>
 
-                    <Field
-                        label="Project type"
-                        error={error('project_type')}
-                    >
+                <div className="mt-5 grid gap-5 lg:grid-cols-3">
+                    <Field label="Project type" error={error('project_type')}>
                         <SelectField
                             value={data.project_type}
                             onChange={(value) => setData('project_type', value)}
@@ -432,10 +434,7 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                         />
                     </Field>
 
-                    <Field
-                        label="Payment model"
-                        error={error('payment_model')}
-                    >
+                    <Field label="Payment model" error={error('payment_model')}>
                         <SelectField
                             value={data.payment_model}
                             onChange={(value) =>
@@ -452,7 +451,14 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                             options={projectStatuses}
                         />
                     </Field>
+                </div>
+            </FormSection>
 
+            <FormSection
+                title="Commercial and schedule"
+                description="Nilai kontrak, model pembayaran, dan tanggal penting project."
+            >
+                <div className="grid gap-5 lg:grid-cols-4">
                     <Field
                         label="Contract value"
                         error={error('contract_value')}
@@ -492,39 +498,6 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                             }
                         />
                     </Field>
-                </div>
-
-                <div className="mt-5 grid gap-5 lg:grid-cols-2">
-                    <Field label="Description" error={error('description')}>
-                        <textarea
-                            value={data.description}
-                            onChange={(event) =>
-                                setData('description', event.target.value)
-                            }
-                            className="border-input bg-background min-h-28 rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                        />
-                    </Field>
-
-                    <Field label="Internal notes" error={error('internal_notes')}>
-                        <textarea
-                            value={data.internal_notes}
-                            onChange={(event) =>
-                                setData('internal_notes', event.target.value)
-                            }
-                            className="border-input bg-background min-h-28 rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-                        />
-                    </Field>
-                </div>
-
-                <div className="mt-5 grid gap-5 lg:grid-cols-2">
-                    <Field label="Tech stack" error={error('tech_stack')}>
-                        <Input
-                            value={data.tech_stack}
-                            onChange={(event) =>
-                                setData('tech_stack', event.target.value)
-                            }
-                        />
-                    </Field>
 
                     <Field label="Live date" error={error('live_date')}>
                         <Input
@@ -536,10 +509,51 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                         />
                     </Field>
                 </div>
-            </div>
+            </FormSection>
+
+            <FormSection
+                title="Scope and notes"
+                description="Ruang lingkup pekerjaan, teknologi, dan catatan internal."
+            >
+                <div className="grid gap-5 lg:grid-cols-2">
+                    <Field label="Description" error={error('description')}>
+                        <textarea
+                            value={data.description}
+                            onChange={(event) =>
+                                setData('description', event.target.value)
+                            }
+                            className="min-h-28 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                        />
+                    </Field>
+
+                    <Field label="Tech stack" error={error('tech_stack')}>
+                        <textarea
+                            value={data.tech_stack}
+                            onChange={(event) =>
+                                setData('tech_stack', event.target.value)
+                            }
+                            className="min-h-28 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                        />
+                    </Field>
+
+                    <Field
+                        label="Internal notes"
+                        error={error('internal_notes')}
+                    >
+                        <textarea
+                            value={data.internal_notes}
+                            onChange={(event) =>
+                                setData('internal_notes', event.target.value)
+                            }
+                            className="min-h-28 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                        />
+                    </Field>
+                </div>
+            </FormSection>
 
             <RelationSection
                 title="Project links"
+                description="URL penting seperti production, staging, repository, dan dokumentasi."
                 onAdd={() => setData('links', [...data.links, emptyLink()])}
             >
                 {data.links.length === 0 && (
@@ -550,80 +564,125 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                 {data.links.map((link, index) => (
                     <div
                         key={index}
-                        className="grid gap-4 border-t border-[#E4E7EC] py-4 first:border-t-0 lg:grid-cols-6"
+                        className="rounded-lg border border-[#E4E7EC] p-4"
                     >
-                        <Field
-                            label="Type"
-                            error={error(`links.${index}.type`)}
-                        >
-                            <SelectField
-                                value={link.type}
-                                onChange={(value) =>
-                                    updateLink(index, { type: value })
-                                }
-                                options={linkTypes}
-                            />
-                        </Field>
-                        <Field
-                            label="Label"
-                            error={error(`links.${index}.label`)}
-                        >
-                            <Input
-                                value={link.label}
-                                onChange={(event) =>
-                                    updateLink(index, {
-                                        label: event.target.value,
-                                    })
+                        <div className="mb-4 flex items-center justify-between gap-4">
+                            <p className="text-sm font-semibold text-[#101828]">
+                                Link #{index + 1}
+                            </p>
+                            <RemoveButton
+                                compact
+                                onClick={() =>
+                                    setData(
+                                        'links',
+                                        data.links.filter(
+                                            (_, i) => i !== index,
+                                        ),
+                                    )
                                 }
                             />
-                        </Field>
-                        <Field label="URL" error={error(`links.${index}.url`)}>
-                            <Input
-                                value={link.url}
-                                onChange={(event) =>
-                                    updateLink(index, {
-                                        url: event.target.value,
-                                    })
-                                }
-                            />
-                        </Field>
-                        <Field label="Username">
-                            <Input
-                                value={link.username}
-                                onChange={(event) =>
-                                    updateLink(index, {
-                                        username: event.target.value,
-                                    })
-                                }
-                            />
-                        </Field>
-                        <label className="flex items-center gap-2 pt-7 text-sm">
-                            <input
-                                type="checkbox"
-                                checked={link.is_primary}
-                                onChange={(event) =>
-                                    updateLink(index, {
-                                        is_primary: event.target.checked,
-                                    })
-                                }
-                            />
-                            Primary
-                        </label>
-                        <RemoveButton
-                            onClick={() =>
-                                setData(
-                                    'links',
-                                    data.links.filter((_, i) => i !== index),
-                                )
-                            }
-                        />
+                        </div>
+
+                        <div className="grid gap-4 lg:grid-cols-3">
+                            <Field
+                                label="Type"
+                                error={error(`links.${index}.type`)}
+                            >
+                                <SelectField
+                                    value={link.type}
+                                    onChange={(value) =>
+                                        updateLink(index, { type: value })
+                                    }
+                                    options={linkTypes}
+                                />
+                            </Field>
+                            <Field
+                                label="Label"
+                                error={error(`links.${index}.label`)}
+                            >
+                                <Input
+                                    value={link.label}
+                                    onChange={(event) =>
+                                        updateLink(index, {
+                                            label: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field
+                                label="URL"
+                                error={error(`links.${index}.url`)}
+                            >
+                                <Input
+                                    value={link.url}
+                                    onChange={(event) =>
+                                        updateLink(index, {
+                                            url: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                        </div>
+
+                        <div className="mt-4 grid gap-4 lg:grid-cols-3">
+                            <Field label="Username">
+                                <Input
+                                    value={link.username}
+                                    onChange={(event) =>
+                                        updateLink(index, {
+                                            username: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Notes">
+                                <Input
+                                    value={link.notes}
+                                    onChange={(event) =>
+                                        updateLink(index, {
+                                            notes: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <div className="flex items-end gap-5 pb-2">
+                                <label className="flex items-center gap-2 text-sm">
+                                    <input
+                                        type="checkbox"
+                                        checked={link.is_primary}
+                                        onChange={(event) =>
+                                            updateLink(index, {
+                                                is_primary:
+                                                    event.target.checked,
+                                            })
+                                        }
+                                    />
+                                    Primary
+                                </label>
+                                <label className="flex items-center gap-2 text-sm">
+                                    <input
+                                        type="checkbox"
+                                        checked={link.is_active}
+                                        onChange={(event) =>
+                                            updateLink(index, {
+                                                is_active: event.target.checked,
+                                            })
+                                        }
+                                    />
+                                    Active
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 ))}
             </RelationSection>
 
             <RelationSection
                 title="Project members"
-                onAdd={() => setData('members', [...data.members, emptyMember()])}
+                description="Tim yang bertanggung jawab dalam project ini."
+                onAdd={() =>
+                    setData('members', [...data.members, emptyMember()])
+                }
             >
                 {data.members.length === 0 && (
                     <p className="py-4 text-sm text-[#667085]">
@@ -633,64 +692,76 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                 {data.members.map((member, index) => (
                     <div
                         key={index}
-                        className="grid gap-4 border-t border-[#E4E7EC] py-4 first:border-t-0 lg:grid-cols-4"
+                        className="rounded-lg border border-[#E4E7EC] p-4"
                     >
-                        <Field
-                            label="User"
-                            error={error(`members.${index}.user_id`)}
-                        >
-                            <select
-                                value={member.user_id}
-                                onChange={(event) =>
-                                    updateMember(index, {
-                                        user_id: event.target.value,
-                                    })
+                        <div className="mb-4 flex items-center justify-between gap-4">
+                            <p className="text-sm font-semibold text-[#101828]">
+                                Member #{index + 1}
+                            </p>
+                            <RemoveButton
+                                compact
+                                onClick={() =>
+                                    setData(
+                                        'members',
+                                        data.members.filter(
+                                            (_, i) => i !== index,
+                                        ),
+                                    )
                                 }
-                                className="border-input bg-background h-9 w-full rounded-md border px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            />
+                        </div>
+
+                        <div className="grid gap-4 lg:grid-cols-3">
+                            <Field
+                                label="User"
+                                error={error(`members.${index}.user_id`)}
                             >
-                                <option value="">Select user</option>
-                                {users.map((user) => (
-                                    <option key={user.id} value={user.id}>
-                                        {user.name} ({user.email})
-                                    </option>
-                                ))}
-                            </select>
-                        </Field>
-                        <Field label="Role">
-                            <Input
-                                value={member.role}
-                                onChange={(event) =>
-                                    updateMember(index, {
-                                        role: event.target.value,
-                                    })
-                                }
-                            />
-                        </Field>
-                        <Field label="Assigned at">
-                            <Input
-                                type="datetime-local"
-                                value={member.assigned_at}
-                                onChange={(event) =>
-                                    updateMember(index, {
-                                        assigned_at: event.target.value,
-                                    })
-                                }
-                            />
-                        </Field>
-                        <RemoveButton
-                            onClick={() =>
-                                setData(
-                                    'members',
-                                    data.members.filter((_, i) => i !== index),
-                                )
-                            }
-                        />
+                                <select
+                                    value={member.user_id}
+                                    onChange={(event) =>
+                                        updateMember(index, {
+                                            user_id: event.target.value,
+                                        })
+                                    }
+                                    className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                                >
+                                    <option value="">Select user</option>
+                                    {users.map((user) => (
+                                        <option key={user.id} value={user.id}>
+                                            {user.name} ({user.email})
+                                        </option>
+                                    ))}
+                                </select>
+                            </Field>
+                            <Field label="Role">
+                                <Input
+                                    value={member.role}
+                                    onChange={(event) =>
+                                        updateMember(index, {
+                                            role: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Assigned at">
+                                <Input
+                                    type="datetime-local"
+                                    value={member.assigned_at}
+                                    onChange={(event) =>
+                                        updateMember(index, {
+                                            assigned_at: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                        </div>
                     </div>
                 ))}
             </RelationSection>
 
             <RelationSection
                 title="Payment timelines"
+                description="Rencana tagihan, pembayaran, jatuh tempo, dan catatan invoice."
                 onAdd={() =>
                     setData('payment_timelines', [
                         ...data.payment_timelines,
@@ -709,147 +780,263 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
                 {data.payment_timelines.map((payment, index) => (
                     <div
                         key={index}
-                        className="grid gap-4 border-t border-[#E4E7EC] py-4 first:border-t-0 lg:grid-cols-6"
+                        className="rounded-lg border border-[#E4E7EC] p-4"
                     >
-                        <Field
-                            label="Type"
-                            error={error(`payment_timelines.${index}.type`)}
-                        >
-                            <SelectField
-                                value={payment.type}
-                                onChange={(value) =>
-                                    updatePayment(index, { type: value })
-                                }
-                                options={paymentTypes}
-                            />
-                        </Field>
-                        <Field
-                            label="Title"
-                            error={error(`payment_timelines.${index}.title`)}
-                        >
-                            <Input
-                                value={payment.title}
-                                onChange={(event) =>
-                                    updatePayment(index, {
-                                        title: event.target.value,
-                                    })
+                        <div className="mb-4 flex items-center justify-between gap-4">
+                            <p className="text-sm font-semibold text-[#101828]">
+                                Payment #{index + 1}
+                            </p>
+                            <RemoveButton
+                                compact
+                                onClick={() =>
+                                    setData(
+                                        'payment_timelines',
+                                        data.payment_timelines.filter(
+                                            (_, i) => i !== index,
+                                        ),
+                                    )
                                 }
                             />
-                        </Field>
-                        <Field label="Planned amount">
-                            <Input
-                                type="number"
-                                min="0"
-                                value={payment.planned_amount}
-                                onChange={(event) =>
-                                    updatePayment(index, {
-                                        planned_amount: event.target.value,
-                                    })
-                                }
-                            />
-                        </Field>
-                        <Field label="Paid amount">
-                            <Input
-                                type="number"
-                                min="0"
-                                value={payment.paid_amount}
-                                onChange={(event) =>
-                                    updatePayment(index, {
-                                        paid_amount: event.target.value,
-                                    })
-                                }
-                            />
-                        </Field>
-                        <Field label="Due date">
-                            <Input
-                                type="date"
-                                value={payment.due_date}
-                                onChange={(event) =>
-                                    updatePayment(index, {
-                                        due_date: event.target.value,
-                                    })
-                                }
-                            />
-                        </Field>
-                        <RemoveButton
-                            onClick={() =>
-                                setData(
-                                    'payment_timelines',
-                                    data.payment_timelines.filter(
-                                        (_, i) => i !== index,
-                                    ),
-                                )
-                            }
-                        />
-                        <Field label="Status">
-                            <SelectField
-                                value={payment.status}
-                                onChange={(value) =>
-                                    updatePayment(index, { status: value })
-                                }
-                                options={paymentStatuses}
-                            />
-                        </Field>
-                        <Field label="Payment method">
-                            <SelectField
-                                value={payment.payment_method}
-                                onChange={(value) =>
-                                    updatePayment(index, {
-                                        payment_method: value,
-                                    })
-                                }
-                                options={paymentMethods}
-                            />
-                        </Field>
-                        <Field label="Percentage">
-                            <Input
-                                type="number"
-                                min="0"
-                                max="100"
-                                value={payment.percentage}
-                                onChange={(event) =>
-                                    updatePayment(index, {
-                                        percentage: event.target.value,
-                                    })
-                                }
-                            />
-                        </Field>
-                        <Field label="Reminder days">
-                            <Input
-                                type="number"
-                                min="0"
-                                value={payment.reminder_days_before}
-                                onChange={(event) =>
-                                    updatePayment(index, {
-                                        reminder_days_before:
-                                            event.target.value,
-                                    })
-                                }
-                            />
-                        </Field>
-                        <Field label="Reference">
-                            <Input
-                                value={payment.reference_number}
-                                onChange={(event) =>
-                                    updatePayment(index, {
-                                        reference_number: event.target.value,
-                                    })
-                                }
-                            />
-                        </Field>
-                        <label className="flex items-center gap-2 pt-7 text-sm">
-                            <input
-                                type="checkbox"
-                                checked={payment.is_additional_charge}
-                                onChange={(event) =>
-                                    updatePayment(index, {
-                                        is_additional_charge:
-                                            event.target.checked,
-                                    })
-                                }
-                            />
-                            Additional
-                        </label>
+                        </div>
+
+                        <div className="grid gap-4 lg:grid-cols-4">
+                            <Field
+                                label="Type"
+                                error={error(`payment_timelines.${index}.type`)}
+                            >
+                                <SelectField
+                                    value={payment.type}
+                                    onChange={(value) =>
+                                        updatePayment(index, { type: value })
+                                    }
+                                    options={paymentTypes}
+                                />
+                            </Field>
+                            <Field
+                                label="Title"
+                                error={error(
+                                    `payment_timelines.${index}.title`,
+                                )}
+                            >
+                                <Input
+                                    value={payment.title}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            title: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Sequence">
+                                <Input
+                                    type="number"
+                                    min="1"
+                                    value={payment.sequence_order}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            sequence_order: Number(
+                                                event.target.value,
+                                            ),
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Status">
+                                <SelectField
+                                    value={payment.status}
+                                    onChange={(value) =>
+                                        updatePayment(index, { status: value })
+                                    }
+                                    options={paymentStatuses}
+                                />
+                            </Field>
+                        </div>
+
+                        <div className="mt-4 grid gap-4 lg:grid-cols-4">
+                            <Field label="Planned amount">
+                                <Input
+                                    type="number"
+                                    min="0"
+                                    value={payment.planned_amount}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            planned_amount: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Paid amount">
+                                <Input
+                                    type="number"
+                                    min="0"
+                                    value={payment.paid_amount}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            paid_amount: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Percentage">
+                                <Input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={payment.percentage}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            percentage: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <label className="flex items-center gap-2 pt-7 text-sm">
+                                <input
+                                    type="checkbox"
+                                    checked={payment.is_additional_charge}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            is_additional_charge:
+                                                event.target.checked,
+                                        })
+                                    }
+                                />
+                                Additional charge
+                            </label>
+                        </div>
+
+                        <div className="mt-4 grid gap-4 lg:grid-cols-4">
+                            <Field label="Due date">
+                                <Input
+                                    type="date"
+                                    value={payment.due_date}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            due_date: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Paid at">
+                                <Input
+                                    type="date"
+                                    value={payment.paid_at}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            paid_at: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Billing start">
+                                <Input
+                                    type="date"
+                                    value={payment.billing_period_start}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            billing_period_start:
+                                                event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Billing end">
+                                <Input
+                                    type="date"
+                                    value={payment.billing_period_end}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            billing_period_end:
+                                                event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                        </div>
+
+                        <div className="mt-4 grid gap-4 lg:grid-cols-4">
+                            <Field label="Payment method">
+                                <SelectField
+                                    value={payment.payment_method}
+                                    onChange={(value) =>
+                                        updatePayment(index, {
+                                            payment_method: value,
+                                        })
+                                    }
+                                    options={paymentMethods}
+                                />
+                            </Field>
+                            <Field label="Reference">
+                                <Input
+                                    value={payment.reference_number}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            reference_number:
+                                                event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Proof file">
+                                <Input
+                                    value={payment.proof_file}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            proof_file: event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                            <Field label="Reminder days">
+                                <Input
+                                    type="number"
+                                    min="0"
+                                    value={payment.reminder_days_before}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            reminder_days_before:
+                                                event.target.value,
+                                        })
+                                    }
+                                />
+                            </Field>
+                        </div>
+
+                        <div className="mt-4 grid gap-4 lg:grid-cols-3">
+                            <Field label="Description">
+                                <textarea
+                                    value={payment.description}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            description: event.target.value,
+                                        })
+                                    }
+                                    className="min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                                />
+                            </Field>
+                            <Field label="Admin notes">
+                                <textarea
+                                    value={payment.admin_notes}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            admin_notes: event.target.value,
+                                        })
+                                    }
+                                    className="min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                                />
+                            </Field>
+                            <Field label="Client notes">
+                                <textarea
+                                    value={payment.client_notes}
+                                    onChange={(event) =>
+                                        updatePayment(index, {
+                                            client_notes: event.target.value,
+                                        })
+                                    }
+                                    className="min-h-24 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                                />
+                            </Field>
+                        </div>
                     </div>
                 ))}
             </RelationSection>
@@ -867,27 +1054,59 @@ export default function ProjectForm({ clients, users, project = null }: Props) {
     );
 }
 
+function FormSection({
+    title,
+    description,
+    children,
+}: {
+    title: string;
+    description: string;
+    children: React.ReactNode;
+}) {
+    return (
+        <section className="rounded-lg border border-[#E4E7EC] bg-white p-6">
+            <div className="mb-5">
+                <h2 className="text-base font-semibold text-[#101828]">
+                    {title}
+                </h2>
+                <p className="mt-1 text-sm text-[#667085]">{description}</p>
+            </div>
+            {children}
+        </section>
+    );
+}
+
 function RelationSection({
     title,
+    description,
     onAdd,
     children,
 }: {
     title: string;
+    description: string;
     onAdd: () => void;
     children: React.ReactNode;
 }) {
     return (
         <section className="rounded-lg border border-[#E4E7EC] bg-white p-6">
-            <div className="flex items-center justify-between gap-4">
-                <h2 className="text-base font-semibold text-[#101828]">
-                    {title}
-                </h2>
-                <Button type="button" variant="outline" size="sm" onClick={onAdd}>
+            <div className="flex items-start justify-between gap-4">
+                <div>
+                    <h2 className="text-base font-semibold text-[#101828]">
+                        {title}
+                    </h2>
+                    <p className="mt-1 text-sm text-[#667085]">{description}</p>
+                </div>
+                <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={onAdd}
+                >
                     <Plus className="size-4" />
                     Add
                 </Button>
             </div>
-            <div className="mt-4">{children}</div>
+            <div className="mt-5 flex flex-col gap-4">{children}</div>
         </section>
     );
 }
@@ -895,19 +1114,25 @@ function RelationSection({
 function RemoveButton({
     onClick,
     disabled = false,
+    compact = false,
 }: {
     onClick: () => void;
     disabled?: boolean;
+    compact?: boolean;
 }) {
     return (
-        <div className="flex items-end">
+        <div className={compact ? 'shrink-0' : 'flex items-end'}>
             <Button
                 type="button"
                 variant="outline"
                 size="sm"
                 onClick={onClick}
                 disabled={disabled}
-                className={cn('w-full text-red-600', disabled && 'opacity-40')}
+                className={cn(
+                    !compact && 'w-full',
+                    'text-red-600',
+                    disabled && 'opacity-40',
+                )}
             >
                 <Trash2 className="size-4" />
                 Remove
@@ -916,11 +1141,7 @@ function RemoveButton({
     );
 }
 
-function patchRow<T>(
-    rows: T[],
-    index: number,
-    value: Partial<T>,
-): T[] {
+function patchRow<T>(rows: T[], index: number, value: Partial<T>): T[] {
     return rows.map((row, rowIndex) =>
         rowIndex === index ? { ...row, ...value } : row,
     );

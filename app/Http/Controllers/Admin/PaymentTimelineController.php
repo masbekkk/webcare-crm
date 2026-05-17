@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\PaymentTimelineIndexRequest;
+use App\Http\Requests\Admin\PaymentTimelineStoreRequest;
 use App\Models\Client;
 use App\Models\Project;
 use App\Models\ProjectPaymentTimeline;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -19,12 +21,13 @@ class PaymentTimelineController extends Controller
         $query = ProjectPaymentTimeline::query()
             ->with(['client:id,company_name', 'project:id,name,slug'])
             ->tap(fn (Builder $query) => $this->applyFilters($query, $filters));
+        $paymentTimelines = (clone $query)
+            ->tap(fn (Builder $query) => $this->applySorting($query, $filters))
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('admin/payment-timelines/index', [
-            'paymentTimelines' => $query
-                ->latest('due_date')
-                ->paginate(10)
-                ->withQueryString(),
+            'paymentTimelines' => $paymentTimelines,
             'filters' => $this->filters($filters),
             'overallStats' => $this->stats(ProjectPaymentTimeline::query()),
             'filteredStats' => $this->stats((clone $query)->withoutEagerLoads()),
@@ -35,6 +38,22 @@ class PaymentTimelineController extends Controller
                 ->orderBy('name')
                 ->get(['id', 'client_id', 'name']),
         ]);
+    }
+
+    public function store(PaymentTimelineStoreRequest $request): RedirectResponse
+    {
+        $data = $request->validated();
+        $plannedAmount = (float) $data['planned_amount'];
+        $paidAmount = (float) $data['paid_amount'];
+
+        ProjectPaymentTimeline::create([
+            ...$data,
+            'remaining_amount' => max($plannedAmount - $paidAmount, 0),
+            'is_additional_charge' => (bool) ($data['is_additional_charge'] ?? false),
+            'created_by' => $request->user()->id,
+        ]);
+
+        return to_route('admin.payment-timelines.index');
     }
 
     /**
@@ -68,6 +87,26 @@ class PaymentTimelineController extends Controller
     }
 
     /**
+     * @param  array<string, mixed>  $filters
+     */
+    private function applySorting(Builder $query, array $filters): void
+    {
+        if (($filters['sort'] ?? null) === 'client') {
+            $query
+                ->join('clients', 'clients.id', '=', 'project_payment_timelines.client_id')
+                ->orderBy('clients.company_name', $this->sortDirection($filters))
+                ->select('project_payment_timelines.*');
+
+            return;
+        }
+
+        $query->orderBy(
+            $filters['sort'] ?? 'due_date',
+            $this->sortDirection($filters),
+        );
+    }
+
+    /**
      * @return array<string, string|null>
      */
     private function filters(array $filters): array
@@ -86,7 +125,17 @@ class PaymentTimelineController extends Controller
             'billing_from' => $filters['billing_from'] ?? null,
             'billing_to' => $filters['billing_to'] ?? null,
             'is_additional_charge' => isset($filters['is_additional_charge']) ? (string) (int) $filters['is_additional_charge'] : null,
+            'sort' => $filters['sort'] ?? 'due_date',
+            'direction' => $filters['direction'] ?? 'desc',
         ];
+    }
+
+    /**
+     * @param  array<string, mixed>  $filters
+     */
+    private function sortDirection(array $filters): string
+    {
+        return ($filters['direction'] ?? 'desc') === 'asc' ? 'asc' : 'desc';
     }
 
     /**

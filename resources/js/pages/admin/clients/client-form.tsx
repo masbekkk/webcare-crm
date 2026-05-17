@@ -179,7 +179,7 @@ export default function ClientForm({
                             onChange={(event) =>
                                 setData('status', event.target.value)
                             }
-                            className="border-input bg-background h-9 w-full rounded-md border px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         >
                             {statuses.map((status) => (
                                 <option key={status} value={status}>
@@ -229,7 +229,7 @@ export default function ClientForm({
                             onChange={(event) =>
                                 setData('address', event.target.value)
                             }
-                            className="border-input bg-background min-h-28 rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            className="min-h-28 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         />
                     </Field>
                     <Field label="Notes" error={error('notes')}>
@@ -238,16 +238,14 @@ export default function ClientForm({
                             onChange={(event) =>
                                 setData('notes', event.target.value)
                             }
-                            className="border-input bg-background min-h-28 rounded-md border px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                            className="min-h-28 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
                         />
                     </Field>
                 </div>
             </section>
 
             <section className="rounded-lg border border-[#E4E7EC] bg-white p-6">
-                <h2 className="text-base font-semibold text-[#101828]">
-                    PIC
-                </h2>
+                <h2 className="text-base font-semibold text-[#101828]">PIC</h2>
                 <div className="mt-5 grid gap-5 lg:grid-cols-3">
                     <Field label="PIC name" error={error('pic_name')}>
                         <Input
@@ -302,7 +300,9 @@ export default function ClientForm({
                         type="button"
                         variant="outline"
                         size="sm"
-                        onClick={() => setData('users', [...data.users, emptyUser()])}
+                        onClick={() =>
+                            setData('users', [...data.users, emptyUser()])
+                        }
                     >
                         <Plus className="size-4" />
                         Add user

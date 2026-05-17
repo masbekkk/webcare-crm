@@ -22,6 +22,9 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
+import { index as clientsIndex } from '@/actions/App/Http/Controllers/Admin/ClientController';
+import { index as projectLinksIndex } from '@/actions/App/Http/Controllers/Admin/ProjectLinkController';
+import { index as usersIndex } from '@/actions/App/Http/Controllers/Admin/UserController';
 import AppLogo from '@/components/app-logo';
 import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
@@ -51,16 +54,21 @@ const sidebarNavEntries: SidebarNavEntry[] = [
         icon: LayoutDashboard,
     },
     {
-        type: 'item',
-        title: 'Clients',
-        href: '/admin/clients',
+        type: 'group',
+        title: 'Clients & Users',
         icon: UsersRound,
-    },
-    {
-        type: 'item',
-        title: 'Users',
-        href: '/admin/users',
-        icon: UserCog,
+        items: [
+            {
+                title: 'Clients',
+                href: clientsIndex(),
+                icon: UsersRound,
+            },
+            {
+                title: 'Users',
+                href: usersIndex(),
+                icon: UserCog,
+            },
+        ],
     },
     {
         type: 'group',
@@ -74,7 +82,7 @@ const sidebarNavEntries: SidebarNavEntry[] = [
             },
             {
                 title: 'Project Links',
-                href: '/admin/project-links',
+                href: projectLinksIndex(),
                 icon: Link2,
             },
         ],
@@ -158,6 +166,7 @@ const sidebarNavEntries: SidebarNavEntry[] = [
 export function AppSidebar() {
     const { isCurrentOrParentUrl } = useCurrentUrl();
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
+        'Clients & Users': true,
         Projects: true,
     });
 
@@ -305,22 +314,6 @@ export function AppSidebar() {
                                 </div>
                             );
                         })}
-                    </div>
-
-                    <div className="mt-8 rounded-lg border border-[#E4E7EC] bg-[#F9FAFB] p-4">
-                        <div className="flex size-11 items-center justify-center rounded-lg bg-white text-brand-500">
-                            <MonitorCheck
-                                className="size-5"
-                                strokeWidth={1.8}
-                            />
-                        </div>
-                        <p className="mt-4 text-sm font-semibold text-[#101828]">
-                            Webcare CRM
-                        </p>
-                        <p className="mt-1 text-xs leading-5 text-[#667085]">
-                            Operasional klien, tiket, dan penjualan dalam satu
-                            dashboard.
-                        </p>
                     </div>
                 </nav>
             </div>

@@ -3,6 +3,8 @@
 namespace Tests\Feature\Admin;
 
 use App\Models\Client;
+use App\Models\Project;
+use App\Models\ProjectMember;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -29,6 +31,55 @@ class ClientManagementTest extends TestCase
                 ->has('clients.data', 1)
                 ->where('clients.data.0.company_name', 'Acme Studio')
                 ->where('clients.data.0.users_count', 1));
+    }
+
+    public function test_admin_can_search_sort_and_view_client_index_stats(): void
+    {
+        $admin = User::factory()->create();
+        $beta = Client::create([
+            'company_name' => 'Beta Studio',
+            'pic_name' => 'Zara',
+            'status' => 'prospect',
+        ]);
+        $acme = Client::create([
+            'company_name' => 'Acme Studio',
+            'pic_name' => 'Budi',
+            'status' => 'active',
+        ]);
+        User::factory()->create([
+            'client_id' => $acme->id,
+            'role' => 'client',
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.clients.index', [
+                'search' => 'studio',
+                'sort' => 'pic',
+                'direction' => 'asc',
+            ]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('admin/clients/index')
+                ->where('clients.data.0.company_name', 'Acme Studio')
+                ->where('clients.data.1.company_name', 'Beta Studio')
+                ->where('filters.search', 'studio')
+                ->where('filters.sort', 'pic')
+                ->where('filters.direction', 'asc')
+                ->where('stats.total_count', 2)
+                ->where('stats.active_count', 1)
+                ->where('stats.client_user_count', 1));
+
+        $this->actingAs($admin)
+            ->get(route('admin.clients.index', [
+                'search' => 'acme',
+                'sort' => 'client',
+                'direction' => 'desc',
+            ]))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->has('clients.data', 1)
+                ->where('clients.data.0.id', $acme->id));
     }
 
     public function test_admin_can_view_client_create_form(): void
@@ -61,6 +112,50 @@ class ClientManagementTest extends TestCase
                 ->where('client.company_name', 'Acme Studio')
                 ->has('client.users', 1)
                 ->where('client.users.0.name', 'Client User'));
+    }
+
+    public function test_admin_can_view_client_show_page_with_users_and_projects(): void
+    {
+        $admin = User::factory()->create();
+        $client = Client::create([
+            'company_name' => 'Acme Studio',
+            'pic_name' => 'Budi',
+            'company_email' => 'hello@acme.test',
+            'status' => 'active',
+        ]);
+        $clientUser = User::factory()->create([
+            'client_id' => $client->id,
+            'name' => 'Client User',
+            'email' => 'client@acme.test',
+            'role' => 'client',
+        ]);
+        $project = Project::create([
+            'client_id' => $client->id,
+            'name' => 'Acme Website',
+            'slug' => 'acme-website',
+            'project_type' => 'Company Profile',
+            'contract_value' => 15000000,
+            'status' => 'development',
+            'created_by' => $admin->id,
+        ]);
+
+        ProjectMember::create([
+            'project_id' => $project->id,
+            'user_id' => $clientUser->id,
+            'role' => 'Reviewer',
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('admin.clients.show', $client))
+            ->assertOk()
+            ->assertInertia(fn (Assert $page) => $page
+                ->component('admin/clients/show')
+                ->where('client.company_name', 'Acme Studio')
+                ->where('client.users_count', 1)
+                ->where('client.projects_count', 1)
+                ->where('client.users.0.name', 'Client User')
+                ->where('client.projects.0.name', 'Acme Website')
+                ->where('client.projects.0.members.0.user.name', 'Client User'));
     }
 
     public function test_admin_can_create_client_with_client_users(): void
