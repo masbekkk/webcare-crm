@@ -1,92 +1,164 @@
 import { Link } from '@inertiajs/react';
+import type { InertiaLinkProps } from '@inertiajs/react';
 import {
-    Bot,
-    Box,
+    Activity,
+    Bell,
     BriefcaseBusiness,
-    Calendar,
+    Bug,
     ChevronDown,
-    Grid2X2,
-    ShoppingCart,
+    CircleDollarSign,
+    Globe2,
+    LayoutDashboard,
+    Link2,
+    MonitorCheck,
+    Server,
+    Settings,
+    ShieldCheck,
+    Siren,
+    UserCog,
+    UserRound,
+    UsersRound,
+    Wrench,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useState } from 'react';
 import AppLogo from '@/components/app-logo';
+import { useCurrentUrl } from '@/hooks/use-current-url';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 
 type SidebarGroup = {
+    type: 'group';
     title: string;
-    icon: typeof Grid2X2;
-    badge?: boolean;
-    items: { title: string; badge?: boolean }[];
+    icon: LucideIcon;
+    items: SidebarItem[];
 };
 
-const sidebarGroups: SidebarGroup[] = [
+type SidebarItem = {
+    type?: 'item';
+    title: string;
+    href: NonNullable<InertiaLinkProps['href']>;
+    icon: LucideIcon;
+};
+
+type SidebarNavEntry = SidebarGroup | SidebarItem;
+
+const sidebarNavEntries: SidebarNavEntry[] = [
     {
+        type: 'item',
         title: 'Dashboard',
-        icon: Grid2X2,
-        items: [
-            { title: 'Ecommerce' },
-            { title: 'Analytics' },
-            { title: 'Marketing' },
-            { title: 'CRM' },
-            { title: 'Stocks' },
-            { title: 'SaaS' },
-            { title: 'Logistics' },
-            { title: 'AI', badge: true },
-            { title: 'Sales', badge: true },
-            { title: 'Finance', badge: true },
-        ],
+        href: dashboard(),
+        icon: LayoutDashboard,
     },
     {
-        title: 'AI Assistant',
-        icon: Bot,
-        badge: true,
-        items: [
-            { title: 'Chatbot' },
-            { title: 'Prompts' },
-            { title: 'Knowledge Base' },
-        ],
+        type: 'item',
+        title: 'Clients',
+        href: '/admin/clients',
+        icon: UsersRound,
     },
     {
-        title: 'E-commerce',
-        icon: ShoppingCart,
-        items: [
-            { title: 'Products' },
-            { title: 'Orders' },
-            { title: 'Customers' },
-        ],
+        type: 'item',
+        title: 'Users',
+        href: '/admin/users',
+        icon: UserCog,
     },
     {
-        title: 'Calendar',
-        icon: Calendar,
-        items: [
-            { title: 'Schedule' },
-            { title: 'Appointments' },
-            { title: 'Reminders' },
-        ],
-    },
-    {
+        type: 'group',
         title: 'Projects',
         icon: BriefcaseBusiness,
         items: [
-            { title: 'Kanban' },
-            { title: 'Tasks' },
-            { title: 'Reports' },
+            {
+                title: 'Projects',
+                href: '/admin/projects',
+                icon: BriefcaseBusiness,
+            },
+            {
+                title: 'Project Links',
+                href: '/admin/project-links',
+                icon: Link2,
+            },
+        ],
+    },
+    {
+        type: 'item',
+        title: 'Payment Timelines',
+        href: '/admin/payment-timelines',
+        icon: CircleDollarSign,
+    },
+    {
+        type: 'group',
+        title: 'Monitoring',
+        icon: Activity,
+        items: [
+            { title: 'Issue List', href: '/admin/issues', icon: Bug },
+            {
+                title: 'Website Monitors',
+                href: '/admin/monitors',
+                icon: MonitorCheck,
+            },
+            {
+                title: 'Check Logs',
+                href: '/admin/website-check-logs',
+                icon: Activity,
+            },
+            {
+                title: 'Incidents',
+                href: '/admin/website-incidents',
+                icon: Siren,
+            },
+        ],
+    },
+    {
+        type: 'group',
+        title: 'Operations',
+        icon: Wrench,
+        items: [
+            {
+                title: 'Maintenance Logs',
+                href: '/admin/maintenance-logs',
+                icon: Wrench,
+            },
+            {
+                title: 'Domain Assets',
+                href: '/admin/domain-assets',
+                icon: Globe2,
+            },
+            {
+                title: 'Hosting Assets',
+                href: '/admin/hosting-assets',
+                icon: Server,
+            },
+            {
+                title: 'Notifications',
+                href: '/admin/notifications',
+                icon: Bell,
+            },
+        ],
+    },
+    {
+        type: 'group',
+        title: 'Settings',
+        icon: Settings,
+        items: [
+            { title: 'Profile', href: '/settings/profile', icon: UserRound },
+            {
+                title: 'Security',
+                href: '/settings/security',
+                icon: ShieldCheck,
+            },
+            {
+                title: 'Appearance',
+                href: '/settings/appearance',
+                icon: Settings,
+            },
         ],
     },
 ];
 
-function NewBadge() {
-    return (
-        <span className="rounded-full bg-success-50 px-3 py-0.5 text-xs font-semibold text-success-600">
-            NEW
-        </span>
-    );
-}
-
 export function AppSidebar() {
+    const { isCurrentOrParentUrl } = useCurrentUrl();
     const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
-        Dashboard: true,
+        Projects: true,
     });
 
     const toggleGroup = (title: string) => {
@@ -96,6 +168,9 @@ export function AppSidebar() {
         }));
     };
 
+    const groupIsActive = (group: SidebarGroup): boolean =>
+        group.items.some((item) => isCurrentOrParentUrl(item.href));
+
     return (
         <aside className="fixed inset-y-0 left-0 hidden w-[280px] overflow-y-auto border-r border-[#E4E7EC] bg-white lg:block">
             <div className="flex h-full flex-col px-5 py-6">
@@ -103,15 +178,48 @@ export function AppSidebar() {
                     <AppLogo />
                 </Link>
 
-                <nav className="mt-11">
+                <nav className="mt-10">
                     <p className="mb-4 text-xs font-medium text-[#98A2B3]">
                         MENU
                     </p>
 
                     <div className="flex flex-col gap-1">
-                        {sidebarGroups.map((group) => {
-                            const isOpen = openGroups[group.title] ?? false;
-                            const isDashboard = group.title === 'Dashboard';
+                        {sidebarNavEntries.map((entry) => {
+                            if (entry.type !== 'group') {
+                                const itemIsActive = isCurrentOrParentUrl(
+                                    entry.href,
+                                );
+
+                                return (
+                                    <Link
+                                        key={entry.title}
+                                        href={entry.href}
+                                        prefetch
+                                        className={cn(
+                                            'flex h-12 w-full items-center gap-3 rounded-lg px-4 text-left text-sm font-semibold text-[#101828] hover:bg-[#F2F4F7]',
+                                            itemIsActive &&
+                                                'bg-brand-50 text-brand-500',
+                                        )}
+                                    >
+                                        <entry.icon
+                                            className={cn(
+                                                'size-6 text-[#667085]',
+                                                itemIsActive &&
+                                                    'text-brand-500',
+                                            )}
+                                            strokeWidth={1.8}
+                                        />
+                                        <span className="flex-1">
+                                            {entry.title}
+                                        </span>
+                                    </Link>
+                                );
+                            }
+
+                            const group = entry;
+                            const isActive = groupIsActive(group);
+                            const isOpen =
+                                openGroups[group.title] ?? isActive ?? false;
 
                             return (
                                 <div key={group.title}>
@@ -122,21 +230,21 @@ export function AppSidebar() {
                                         onClick={() => toggleGroup(group.title)}
                                         className={cn(
                                             'flex h-12 w-full items-center gap-3 rounded-lg px-4 text-left text-sm font-semibold text-[#101828] hover:bg-[#F2F4F7]',
-                                            isOpen &&
+                                            (isOpen || isActive) &&
                                                 'bg-brand-50 text-brand-500',
                                         )}
                                     >
                                         <group.icon
                                             className={cn(
                                                 'size-6 text-[#667085]',
-                                                isOpen && 'text-brand-500',
+                                                (isOpen || isActive) &&
+                                                    'text-brand-500',
                                             )}
                                             strokeWidth={1.8}
                                         />
                                         <span className="flex-1">
                                             {group.title}
                                         </span>
-                                        {group.badge && <NewBadge />}
                                         <ChevronDown
                                             className={cn(
                                                 'size-5 text-[#344054] transition-transform duration-200',
@@ -157,35 +265,40 @@ export function AppSidebar() {
                                         )}
                                     >
                                         <div className="overflow-hidden">
-                                            <div
-                                                className={cn(
-                                                    'mt-2 mb-2 ml-11 flex flex-col gap-1',
-                                                    !isDashboard && 'mb-3',
-                                                )}
-                                            >
-                                                {group.items.map(
-                                                    (item, index) => (
+                                            <div className="mt-2 mb-3 ml-4 flex flex-col gap-1 border-l border-[#E4E7EC] pl-4">
+                                                {group.items.map((item) => {
+                                                    const itemIsActive =
+                                                        isCurrentOrParentUrl(
+                                                            item.href,
+                                                        );
+
+                                                    return (
                                                         <Link
                                                             key={item.title}
-                                                            href={dashboard()}
+                                                            href={item.href}
                                                             prefetch
                                                             className={cn(
-                                                                'flex h-10 items-center justify-between rounded-lg px-3 text-sm font-medium text-[#101828] hover:bg-[#F2F4F7]',
-                                                                isDashboard &&
-                                                                    index ===
-                                                                        0 &&
+                                                                'flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium text-[#344054] hover:bg-[#F2F4F7] hover:text-[#101828]',
+                                                                itemIsActive &&
                                                                     'bg-brand-50 text-brand-500',
                                                             )}
                                                         >
-                                                            <span>
+                                                            <item.icon
+                                                                className={cn(
+                                                                    'size-4 text-[#667085]',
+                                                                    itemIsActive &&
+                                                                        'text-brand-500',
+                                                                )}
+                                                                strokeWidth={
+                                                                    1.9
+                                                                }
+                                                            />
+                                                            <span className="truncate">
                                                                 {item.title}
                                                             </span>
-                                                            {item.badge && (
-                                                                <NewBadge />
-                                                            )}
                                                         </Link>
-                                                    ),
-                                                )}
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     </div>
@@ -194,9 +307,12 @@ export function AppSidebar() {
                         })}
                     </div>
 
-                    <div className="mt-8 rounded-2xl border border-[#E4E7EC] bg-[#F9FAFB] p-4">
-                        <div className="flex size-11 items-center justify-center rounded-xl bg-white text-brand-500">
-                            <Box className="size-5" strokeWidth={1.8} />
+                    <div className="mt-8 rounded-lg border border-[#E4E7EC] bg-[#F9FAFB] p-4">
+                        <div className="flex size-11 items-center justify-center rounded-lg bg-white text-brand-500">
+                            <MonitorCheck
+                                className="size-5"
+                                strokeWidth={1.8}
+                            />
                         </div>
                         <p className="mt-4 text-sm font-semibold text-[#101828]">
                             Webcare CRM
