@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 
-export default function Profile({
+export default function Profil({
     mustVerifyEmail,
     status,
 }: {
@@ -20,15 +20,15 @@ export default function Profile({
 
     return (
         <>
-            <Head title="Profile settings" />
+            <Head title="Pengaturan profil" />
 
-            <h1 className="sr-only">Profile settings</h1>
+            <h1 className="sr-only">Pengaturan profil</h1>
 
             <div className="space-y-6">
                 <Heading
                     variant="small"
-                    title="Profile information"
-                    description="Update your name and email address"
+                    title="Informasi profil"
+                    description="Tidakrmaldate your name and email address"
                 />
 
                 <Form
@@ -50,7 +50,7 @@ export default function Profile({
                                     name="name"
                                     required
                                     autoComplete="name"
-                                    placeholder="Full name"
+                                    placeholder="Name lengkap"
                                 />
 
                                 <InputError
@@ -60,7 +60,7 @@ export default function Profile({
                             </div>
 
                             <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                                <Label htmlFor="email">Address email</Label>
 
                                 <Input
                                     id="email"
@@ -70,7 +70,7 @@ export default function Profile({
                                     name="email"
                                     required
                                     autoComplete="username"
-                                    placeholder="Email address"
+                                    placeholder="Address email"
                                 />
 
                                 <InputError
@@ -122,10 +122,10 @@ export default function Profile({
     );
 }
 
-Profile.layout = {
+Profil.layout = {
     breadcrumbs: [
         {
-            title: 'Profile settings',
+            title: 'Pengaturan profil',
             href: edit(),
         },
     ],

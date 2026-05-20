@@ -139,10 +139,10 @@ function TwoFactorSetupStep({
 }
 
 function TwoFactorVerificationStep({
-    onClose,
+    onTutup,
     onBack,
 }: {
-    onClose: () => void;
+    onTutup: () => void;
     onBack: () => void;
 }) {
     const [code, setCode] = useState<string>('');
@@ -157,7 +157,7 @@ function TwoFactorVerificationStep({
     return (
         <Form
             {...confirm.form()}
-            onSuccess={() => onClose()}
+            onSuccess={() => onTutup()}
             resetOnError
             resetOnSuccess
         >
@@ -231,7 +231,7 @@ function TwoFactorVerificationStep({
 
 type Props = {
     isOpen: boolean;
-    onClose: () => void;
+    onTutup: () => void;
     requiresConfirmation: boolean;
     twoFactorEnabled: boolean;
     qrCodeSvg: string | null;
@@ -243,7 +243,7 @@ type Props = {
 
 export default function TwoFactorSetupModal({
     isOpen,
-    onClose,
+    onTutup,
     requiresConfirmation,
     twoFactorEnabled,
     qrCodeSvg,
@@ -262,27 +262,27 @@ export default function TwoFactorSetupModal({
     }>(() => {
         if (twoFactorEnabled) {
             return {
-                title: 'Two-factor authentication enabled',
+                title: 'Autentikasi dua faktor aktif',
                 description:
-                    'Two-factor authentication is now enabled. Scan the QR code or enter the setup key in your authenticator app.',
-                buttonText: 'Close',
+                    'Autentikasi dua faktor sekarang aktif. Pindai kode QR atau masukkan kunci setup di aplikasi authenticator.',
+                buttonText: 'Tutup',
             };
         }
 
         if (showVerificationStep) {
             return {
-                title: 'Verify authentication code',
+                title: 'Verifikasi kode autentikasi',
                 description:
-                    'Enter the 6-digit code from your authenticator app',
-                buttonText: 'Continue',
+                    'Masukkan kode 6 digit dari aplikasi authenticator',
+                buttonText: 'Lanjutkan',
             };
         }
 
         return {
-            title: 'Enable two-factor authentication',
+            title: 'Activekan autentikasi dua faktor',
             description:
-                'To finish enabling two-factor authentication, scan the QR code or enter the setup key in your authenticator app',
-            buttonText: 'Continue',
+                'Untuk menyelesaikan aktivasi autentikasi dua faktor, pindai kode QR atau masukkan kunci setup di aplikasi authenticator',
+            buttonText: 'Lanjutkan',
         };
     }, [twoFactorEnabled, showVerificationStep]);
 
@@ -291,10 +291,10 @@ export default function TwoFactorSetupModal({
         clearSetupData();
     }, [clearSetupData]);
 
-    const handleClose = useCallback(() => {
+    const handleTutup = useCallback(() => {
         resetModalState();
-        onClose();
-    }, [onClose, resetModalState]);
+        onTutup();
+    }, [onTutup, resetModalState]);
 
     const handleModalNextStep = useCallback(() => {
         if (requiresConfirmation) {
@@ -303,8 +303,8 @@ export default function TwoFactorSetupModal({
             return;
         }
 
-        handleClose();
-    }, [requiresConfirmation, handleClose]);
+        handleTutup();
+    }, [requiresConfirmation, handleTutup]);
 
     const fetchSetupDataRef = useRef(fetchSetupData);
 
@@ -319,7 +319,7 @@ export default function TwoFactorSetupModal({
     }, [isOpen, qrCodeSvg]);
 
     return (
-        <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+        <Dialog open={isOpen} onOpenChange={(open) => !open && handleTutup()}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader className="flex items-center justify-center">
                     <GridScanIcon />
@@ -332,7 +332,7 @@ export default function TwoFactorSetupModal({
                 <div className="flex flex-col items-center space-y-5">
                     {showVerificationStep ? (
                         <TwoFactorVerificationStep
-                            onClose={handleClose}
+                            onTutup={handleTutup}
                             onBack={() => setShowVerificationStep(false)}
                         />
                     ) : (
